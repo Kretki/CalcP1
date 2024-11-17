@@ -1,0 +1,27 @@
+[
+{
+  "directory": "/home/kretki/code/CalcP1/build",
+  "command": "/usr/bin/clang++  -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/kretki/code/CalcP1/build -I/home/kretki/code/CalcP1 -I/home/kretki/code/CalcP1/build/CalcP_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++  -g   -fPIC -std=gnu++11 -o CMakeFiles/CalcP.dir/CalcP_autogen/mocs_compilation.cpp.o -c /home/kretki/code/CalcP1/build/CalcP_autogen/mocs_compilation.cpp",
+  "file": "/home/kretki/code/CalcP1/build/CalcP_autogen/mocs_compilation.cpp"
+},
+{
+  "directory": "/home/kretki/code/CalcP1/build",
+  "command": "/usr/bin/clang++  -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/kretki/code/CalcP1/build -I/home/kretki/code/CalcP1 -I/home/kretki/code/CalcP1/build/CalcP_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++  -g   -fPIC -std=gnu++11 -o CMakeFiles/CalcP.dir/main.cpp.o -c /home/kretki/code/CalcP1/main.cpp",
+  "file": "/home/kretki/code/CalcP1/main.cpp"
+},
+{
+  "directory": "/home/kretki/code/CalcP1/build",
+  "command": "/usr/bin/clang++  -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/kretki/code/CalcP1/build -I/home/kretki/code/CalcP1 -I/home/kretki/code/CalcP1/build/CalcP_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++  -g   -fPIC -std=gnu++11 -o CMakeFiles/CalcP.dir/mainwindow.cpp.o -c /home/kretki/code/CalcP1/mainwindow.cpp",
+  "file": "/home/kretki/code/CalcP1/mainwindow.cpp"
+},
+{
+  "directory": "/home/kretki/code/CalcP1/build",
+  "command": "/usr/bin/clang++  -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/kretki/code/CalcP1/build -I/home/kretki/code/CalcP1 -I/home/kretki/code/CalcP1/build/CalcP_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++  -g   -fPIC -std=gnu++11 -o CMakeFiles/CalcP.dir/togglewidget.cpp.o -c /home/kretki/code/CalcP1/togglewidget.cpp",
+  "file": "/home/kretki/code/CalcP1/togglewidget.cpp"
+},
+{
+  "directory": "/home/kretki/code/CalcP1/build",
+  "command": "/usr/bin/clang++  -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/kretki/code/CalcP1/build -I/home/kretki/code/CalcP1 -I/home/kretki/code/CalcP1/build/CalcP_autogen/include -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++  -g   -fPIC -std=gnu++11 -o CMakeFiles/CalcP.dir/inputwidget.cpp.o -c /home/kretki/code/CalcP1/inputwidget.cpp",
+  "file": "/home/kretki/code/CalcP1/inputwidget.cpp"
+}
+]

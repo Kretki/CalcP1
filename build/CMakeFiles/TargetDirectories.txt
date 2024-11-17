@@ -1,0 +1,4 @@
+/home/kretki/code/CalcP1/build/CMakeFiles/rebuild_cache.dir
+/home/kretki/code/CalcP1/build/CMakeFiles/edit_cache.dir
+/home/kretki/code/CalcP1/build/CMakeFiles/CalcP.dir
+/home/kretki/code/CalcP1/build/CMakeFiles/CalcP_autogen.dir
