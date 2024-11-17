@@ -11,43 +11,26 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# QtCreator supports the following variables for Android, which are identical to qmake Android variables.
-# Check http://doc.qt.io/qt-5/deployment-android.html for more information.
-# They need to be set before the find_package(Qt5 ...) call.
-
-#if(ANDROID)
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-#    if (ANDROID_ABI STREQUAL "armeabi-v7a")
-#        set(ANDROID_EXTRA_LIBS
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libcrypto.so
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libssl.so)
-#    endif()
-#endif()
-
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-if(ANDROID)
-  add_library(CalcP SHARED
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-    togglewidget.h
-    togglewidget.cpp
-    inputwidget.h
-    inputwidget.cpp
-  )
-else()
-  add_executable(CalcP
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-    togglewidget.h
-    togglewidget.cpp
-    inputwidget.h
-    inputwidget.cpp
-  )
-endif()
+set(QWT_ROOT /usr/local/qwt-6.3.0)
+set(QWT_INCLUDE_DIR ${QWT_ROOT}/include)
+set(QWT_LIBRARY_DIR ${QWT_ROOT}/lib)
 
-target_link_libraries(CalcP PRIVATE Qt5::Widgets)
+include_directories(${QWT_INCLUDE_DIR})
+link_directories(${QWT_LIBRARY_DIR})
+set(QWT_LIBRARIES ${QWT_LIBRARY_DIR}/libqwt.so)
+
+add_executable(CalcP
+  main.cpp
+  mainwindow.cpp
+  mainwindow.h
+  mainwindow.ui
+  togglewidget.h
+  togglewidget.cpp
+  inputwidget.h
+  inputwidget.cpp
+)
+
+target_link_libraries(CalcP PRIVATE Qt5::Core Qt5::Widgets)
+target_link_libraries(CalcP PRIVATE ${QWT_LIBRARIES})

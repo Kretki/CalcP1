@@ -5,6 +5,7 @@
 
 #include <QMainWindow>
 #include <QVBoxLayout>
+#include <QPushButton>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -25,5 +26,6 @@ private:
     QVBoxLayout* layout;
 
     ToggleWidget* toggleWidg;
+    QPushButton* btnNext;
 };
 #endif // MAINWINDOW_H

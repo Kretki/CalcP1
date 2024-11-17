@@ -14,6 +14,9 @@ MainWindow::MainWindow(QWidget *parent)
     toggleWidg = new ToggleWidget(centralWidg);
     layout->addWidget(toggleWidg);
 
+    btnNext = new QPushButton("Следующий шаг", centralWidg);
+    layout->addWidget(btnNext);
+
     this->setCentralWidget(centralWidg);
 }
 

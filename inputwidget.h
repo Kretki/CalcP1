@@ -3,14 +3,16 @@
 
 #include <QWidget>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
 #include <QFile>
-
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
+#include <QString>
+#include <QRegularExpression>
+#include <QtMath>
+#include <QRegularExpression>
+#include <QStringList>
 
 class InputWidget : public QWidget
 {
