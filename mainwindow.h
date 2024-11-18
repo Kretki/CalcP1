@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "togglewidget.h"
+#include "inputwidget.h"
 
 #include <QMainWindow>
 #include <QVBoxLayout>

@@ -12,7 +12,27 @@
 #include <QRegularExpression>
 #include <QtMath>
 #include <QRegularExpression>
-#include <QStringList>
+
+#include <QDebug>
+
+class InputWidgetBlock : public QWidget
+{
+    Q_OBJECT
+
+public:
+    InputWidgetBlock(QString title, QWidget *parent = nullptr);
+// signals:
+//     void lineSubmit(QLineEdit* input, QLabel* output);
+private slots:
+    void calculateExpr();
+private:
+    QVBoxLayout* layout;
+    QHBoxLayout* inOutLayout;
+
+    QLabel* titleLbl;
+    QLineEdit* input;
+    QLabel* output;
+};
 
 class InputWidget : public QWidget
 {
@@ -20,7 +40,6 @@ class InputWidget : public QWidget
 
 public:
     InputWidget(QWidget *parent = nullptr);
-
 private:
     QVBoxLayout* layout;
 };

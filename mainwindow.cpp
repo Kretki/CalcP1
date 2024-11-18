@@ -11,12 +11,14 @@ MainWindow::MainWindow(QWidget *parent)
     layout = new QVBoxLayout(centralWidg);
     centralWidg->setLayout(layout);
 
-    toggleWidg = new ToggleWidget(centralWidg);
-    layout->addWidget(toggleWidg);
+    // toggleWidg = new ToggleWidget(centralWidg);
+    // layout->addWidget(toggleWidg);
 
-    btnNext = new QPushButton("Следующий шаг", centralWidg);
-    layout->addWidget(btnNext);
-
+    // btnNext = new QPushButton("Следующий шаг", centralWidg);
+    // layout->addWidget(btnNext);
+    InputWidget* inp = new InputWidget(this);
+    layout->addWidget(inp);
+    
     this->setCentralWidget(centralWidg);
 }
 
