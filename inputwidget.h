@@ -1,10 +1,8 @@
 #ifndef INPUTWIDGET_H
 #define INPUTWIDGET_H
 
-#include <QDebug>
-
 #include <iostream>
-#include <stdexcept>
+#include <cmath>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,16 +22,14 @@ public:
 #include <QLabel>
 #include <QFile>
 #include <QString>
-#include <QRegularExpression>
-#include <QtMath>
-#include <QRegularExpression>
+#include <QScrollArea>
 
 class InputWidgetBlock : public QWidget
 {
     Q_OBJECT
 
 public:
-    InputWidgetBlock(QString title, QWidget *parent = nullptr);
+    InputWidgetBlock(QString title, QString unit, QWidget *parent = nullptr);
 // signals:
 //     void lineSubmit(QLineEdit* input, QLabel* output);
 private slots:
@@ -41,6 +37,8 @@ private slots:
 private:
     QVBoxLayout* layout;
     QHBoxLayout* inOutLayout;
+
+    QString unit;
 
     QLabel* titleLbl;
     QLineEdit* input;
@@ -53,7 +51,12 @@ class InputWidget : public QWidget
 
 public:
     InputWidget(QWidget *parent = nullptr);
+private slots:
+    void readFromFile(std::vector<InputWidgetBlock*> lines, QString file);
 private:
     QVBoxLayout* layout;
+    QVBoxLayout* scrollLayout;
+    QScrollArea* scrollArea;
+    QWidget* scrollWidg;
 };
 #endif // INPUTWIDGET_H
