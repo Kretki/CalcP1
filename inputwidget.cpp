@@ -2,13 +2,29 @@
 
 Calculator::Calculator(){};
 
-double Calculator::calculateString(std::string input)
+std::pair<double, bool> Calculator::calculateString(std::string input)
 {
+    if(std::string("+-*/^").find(input[input.size()-1]) != std::string::npos)
+    {
+        input.pop_back();
+    }
+    if(std::count(input.begin(), input.end(), '(') != std::count(input.begin(), input.end(), ')'))
+    {
+        return {-1, false};
+    }
     std::vector<std::pair<std::string, int>> priors;
     std::vector<double> numbers;
     std::string curNumber = "";
     std::string sign = "";
     int curPrior = 0;
+    size_t startBracket = input.find_first_of("(")+1;
+    size_t endBracket = input.find_last_of(")");
+    if(endBracket != std::string::npos)
+    {
+        std::string bracketSub = input.substr(startBracket, endBracket-startBracket);
+        double sub = calculateString(bracketSub).first;
+        input.replace(startBracket-1, endBracket-startBracket+2, std::to_string(sub));
+    }
     for(int i = 0; i<input.size(); ++i)
     {
         if(!((input[i]>='0' && input[i]<='9') || (input[i] == '.' || input[i] == ',')))
@@ -31,14 +47,6 @@ double Calculator::calculateString(std::string input)
             {
                 priors.push_back({"^", curPrior+2});
             }
-            else if(sign == "(")
-            {
-                curPrior += 3;
-            }
-            else if(sign == ")")
-            {
-                curPrior -= 3;
-            }
             sign = "";
             curNumber += input[i];
         }
@@ -53,84 +61,50 @@ double Calculator::calculateString(std::string input)
         numbers.push_back(std::stod(curNumber));
         curNumber = "";
     }
-    for(int i = 0; i<priors.size(); ++i)
+    
+    while(priors.size() != 0)
     {
-        qDebug() << QString().fromStdString(priors[i].first) << ' ' << priors[i].second;
-    }
-    for(int i = 0; i<numbers.size(); ++i)
-    {
-        qDebug() << numbers[i];
-    }
-    return 0.;
-}
+        int curPrior = 0;
+        int pos = 0;
+        for(int i = 0; i<priors.size(); ++i)
+        {
+            curPrior = std::max(priors[i].second, curPrior);
+            pos = i;
+        }
+        
+        std::string sign = priors[pos].first;
+        double first = numbers[pos];
+        double second = numbers[pos+1];
+        double res;
 
-double Calculator::calculateExpr(std::string input)
-{
-    bool endFirst = false;
-    bool endSign = false;
-    double dFirst;
-    double dSecond;
-    double res = 0;
-    for(int i = 0; i<input.size(); ++i)
-    {
-        if(!endFirst)
+        if(sign == "+") 
         {
-            if((input[i]>='0' && input[i]<='9') || (input[i] == '.' || input[i] == ',')) 
-            {
-                if(input[i] == ',')
-                    sFirst += '.';
-                else
-                    sFirst += input[i];
-            } 
-            else 
-            {
-                endFirst = true;
-                sign += input[i];
-            }
-        } 
-        else if(!endSign){
-            if(!((input[i]>='0' && input[i]<='9') || (input[i] == '.' || input[i] == ',')))
-            {
-                sign += input[i];
-            }
-            else
-            {
-                endSign = true;
-                sSecond += input[i];
-            }
+            res = first+second;
         }
-        else
+        else if(sign == "-")
         {
-            if(input[i] == ',')
-                sSecond += '.';
-            else
-                sSecond += input[i];
+            res = first-second;
         }
+        else if(sign == "*")
+        {
+            res = first*second;
+        }
+        else if(sign == "/")
+        {
+            res = first/second;
+        }
+        else if(sign == "^")
+        {
+            res = std::pow(first,second);
+        }
+        
+        priors.erase(priors.begin()+pos);
+        numbers.erase(numbers.begin()+pos+1);
+        numbers.erase(numbers.begin()+pos);
+        numbers.insert(numbers.begin()+pos, res);
     }
-    dFirst = std::stod(sFirst);
-    dSecond = std::stod(sSecond);
-    if(sign == "+")
-    {
-        res = dFirst+dSecond;
-    } 
-    else if(sign == "-")
-    {
-        res = dFirst-dSecond;
-    }
-    else if(sign == "*")
-    {
-        res = dFirst*dSecond;
-    }
-    else if(sign == "/")
-    {
-        res = dFirst/dSecond;
-    }
-    else if(sign == "^" || sign == "**")
-    {
-        res = std::pow(dFirst,dSecond);
-    }
-    return res;
-};
+    return {numbers[0], true};
+}
 
 
 InputWidgetBlock::InputWidgetBlock(QString title, QWidget *parent)
@@ -155,14 +129,15 @@ InputWidgetBlock::InputWidgetBlock(QString title, QWidget *parent)
 void InputWidgetBlock::calculateExpr()
 {
     QString expression = input->text();
-    QString fractionResult;
 
     Calculator calc = Calculator();
-    double res = calc.calculateString(QString("10.1+20+(10+10)").toStdString());
-    
-    QString resultText = QString::number(res);
+    std::pair<double, bool> res = calc.calculateString(expression.toStdString());
 
-    output->setText(resultText);
+    if(res.second)
+    {
+        QString resultText = QString::number(res.first);
+        output->setText(resultText);
+    }
 }
 
 InputWidget::InputWidget(QWidget *parent)

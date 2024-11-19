@@ -13,12 +13,7 @@ class Calculator
 {
 public:
     Calculator();
-    double calculateString(std::string input);
-private:
-    double calculateExpr(std::string input);
-    std::string sFirst = "";
-    std::string sign = "";
-    std::string sSecond = "";
+    std::pair<double, bool> calculateString(std::string input);
 };
 
 #include <QWidget>
