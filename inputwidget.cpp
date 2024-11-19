@@ -5,11 +5,20 @@ Calculator::Calculator(){};
 double Calculator::calculateString(std::string input)
 {
     std::vector<std::pair<std::string, int>> priors;
+    std::vector<double> numbers;
+    std::string curNumber = "";
+    std::string sign = "";
     int curPrior = 0;
     for(int i = 0; i<input.size(); ++i)
     {
-        if(!(input[i]>='0' && input[i]<='9') || (input[i] == '.' || input[i] == ',')) 
+        if(!((input[i]>='0' && input[i]<='9') || (input[i] == '.' || input[i] == ',')))
         {
+            sign += input[i];
+        }
+        else if (sign != "")
+        {
+            numbers.push_back(std::stod(curNumber));
+            curNumber = "";
             if(sign == "+" || sign == "-")
             {
                 priors.push_back({sign, curPrior+0});
@@ -18,7 +27,7 @@ double Calculator::calculateString(std::string input)
             {
                 priors.push_back({sign, curPrior+1});
             }
-            else if(sign == "^" || sign == "**")
+            else if(sign == "^") //|| sign == "**")
             {
                 priors.push_back({"^", curPrior+2});
             }
@@ -30,8 +39,29 @@ double Calculator::calculateString(std::string input)
             {
                 curPrior -= 3;
             }
+            sign = "";
+            curNumber += input[i];
+        }
+        else if(sign == "")
+        {
+            curNumber += input[i];
         }
     }
+
+    if(curNumber != "")
+    {
+        numbers.push_back(std::stod(curNumber));
+        curNumber = "";
+    }
+    for(int i = 0; i<priors.size(); ++i)
+    {
+        qDebug() << QString().fromStdString(priors[i].first) << ' ' << priors[i].second;
+    }
+    for(int i = 0; i<numbers.size(); ++i)
+    {
+        qDebug() << numbers[i];
+    }
+    return 0.;
 }
 
 double Calculator::calculateExpr(std::string input)
@@ -128,7 +158,7 @@ void InputWidgetBlock::calculateExpr()
     QString fractionResult;
 
     Calculator calc = Calculator();
-    double res = calc.calculateString(QString("10.1**2").toStdString());
+    double res = calc.calculateString(QString("10.1+20+(10+10)").toStdString());
     
     QString resultText = QString::number(res);
 
