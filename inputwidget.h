@@ -7,13 +7,15 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <vector>
 
 class Calculator
 {
 public:
     Calculator();
-    double calculate(std::string input);
+    double calculateString(std::string input);
 private:
+    double calculateExpr(std::string input);
     std::string sFirst = "";
     std::string sign = "";
     std::string sSecond = "";

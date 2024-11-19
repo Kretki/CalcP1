@@ -2,29 +2,79 @@
 
 Calculator::Calculator(){};
 
-double Calculator::calculate(std::string input)
+double Calculator::calculateString(std::string input)
 {
-    bool check = false;
+    std::vector<std::pair<std::string, int>> priors;
+    int curPrior = 0;
+    for(int i = 0; i<input.size(); ++i)
+    {
+        if(!(input[i]>='0' && input[i]<='9') || (input[i] == '.' || input[i] == ',')) 
+        {
+            if(sign == "+" || sign == "-")
+            {
+                priors.push_back({sign, curPrior+0});
+            }
+            else if(sign == "*" || sign == "/")
+            {
+                priors.push_back({sign, curPrior+1});
+            }
+            else if(sign == "^" || sign == "**")
+            {
+                priors.push_back({"^", curPrior+2});
+            }
+            else if(sign == "(")
+            {
+                curPrior += 3;
+            }
+            else if(sign == ")")
+            {
+                curPrior -= 3;
+            }
+        }
+    }
+}
+
+double Calculator::calculateExpr(std::string input)
+{
+    bool endFirst = false;
+    bool endSign = false;
     double dFirst;
     double dSecond;
     double res = 0;
     for(int i = 0; i<input.size(); ++i)
     {
-        if(!check)
+        if(!endFirst)
         {
-            if((input[i]>='0' && input[i]<='9') || (input[i] == '.')) 
+            if((input[i]>='0' && input[i]<='9') || (input[i] == '.' || input[i] == ',')) 
             {
-                sFirst+=input[i];
+                if(input[i] == ',')
+                    sFirst += '.';
+                else
+                    sFirst += input[i];
             } 
             else 
             {
-                check = true;
+                endFirst = true;
                 sign += input[i];
             }
         } 
-        else 
+        else if(!endSign){
+            if(!((input[i]>='0' && input[i]<='9') || (input[i] == '.' || input[i] == ',')))
+            {
+                sign += input[i];
+            }
+            else
+            {
+                endSign = true;
+                sSecond += input[i];
+            }
+        }
+        else
         {
-            sSecond+=input[i];
+            if(input[i] == ',')
+                sSecond += '.';
+            else
+                sSecond += input[i];
         }
     }
     dFirst = std::stod(sFirst);
@@ -44,6 +94,10 @@ double Calculator::calculate(std::string input)
     else if(sign == "/")
     {
         res = dFirst/dSecond;
+    }
+    else if(sign == "^" || sign == "**")
+    {
+        res = std::pow(dFirst,dSecond);
     }
     return res;
 };
@@ -73,12 +127,8 @@ void InputWidgetBlock::calculateExpr()
     QString expression = input->text();
     QString fractionResult;
 
-
-    QString modExpression = expression;
-    modExpression.replace(QRegularExpression("\\^"), "**");
-
     Calculator calc = Calculator();
-    double res = calc.calculate(QString("10.1*20").toStdString());
+    double res = calc.calculateString(QString("10.1**2").toStdString());
     
     QString resultText = QString::number(res);
 
