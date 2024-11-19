@@ -34,3 +34,9 @@ add_executable(CalcP
 
 target_link_libraries(CalcP PRIVATE Qt5::Core Qt5::Widgets)
 target_link_libraries(CalcP PRIVATE ${QWT_LIBRARIES})
+
+configure_file(inputRLS.txt ${CMAKE_BINARY_DIR}/inputRLS.txt COPYONLY)
+configure_file(inputSig.txt ${CMAKE_BINARY_DIR}/inputSig.txt COPYONLY)
+configure_file(inputTarg.txt ${CMAKE_BINARY_DIR}/inputTarg.txt COPYONLY)
+configure_file(inputNoise.txt ${CMAKE_BINARY_DIR}/inputNoise.txt COPYONLY)
+configure_file(inputReceiver.txt ${CMAKE_BINARY_DIR}/inputReceiver.txt COPYONLY)

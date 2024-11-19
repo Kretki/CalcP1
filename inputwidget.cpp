@@ -47,6 +47,10 @@ std::pair<double, bool> Calculator::calculateString(std::string input)
             {
                 priors.push_back({sign, curPrior+1});
             }
+            else if(sign == "^-")
+            {
+                priors.push_back({"^-", curPrior+2});
+            }
             else if(sign == "^") //|| sign == "**")
             {
                 priors.push_back({"^", curPrior+2});
@@ -97,6 +101,10 @@ std::pair<double, bool> Calculator::calculateString(std::string input)
         {
             res = first/second;
         }
+        else if(sign == "^-")
+        {
+            res = std::pow(first,-second);
+        }
         else if(sign == "^")
         {
             res = std::pow(first,second);
@@ -134,6 +142,11 @@ InputWidgetBlock::InputWidgetBlock(QString title, QString unit, QWidget *parent)
     this->setMaximumHeight(QFontMetrics(input->font()).height()*5);
 }
 
+void InputWidgetBlock::setText(QString text)
+{
+    this->input->setText(text);
+};
+
 void InputWidgetBlock::calculateExpr()
 {
     QString expression = input->text();
@@ -160,7 +173,8 @@ InputWidget::InputWidget(QWidget *parent)
     scrollWidg->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     //RLS params (rls)
-    QPushButton* btnRls = new QPushButton("Загрузить из файла inputRLS.txt", this)
+    QPushButton* btnRls = new QPushButton("Загрузить из файла inputRLS.txt", this);
+    scrollLayout->addWidget(btnRls);
 
     InputWidgetBlock* rls1 = new InputWidgetBlock("Импульсная мощность РЛС", "Вт", this);
     InputWidgetBlock* rls2 = new InputWidgetBlock("КУ антенны", "", this);
@@ -170,19 +184,98 @@ InputWidget::InputWidget(QWidget *parent)
     InputWidgetBlock* rls6 = new InputWidgetBlock("Пороговая вероятность обнаружения", "", this);
     InputWidgetBlock* rls7 = new InputWidgetBlock("Разрешающая способность по дальности", "", this);
     InputWidgetBlock* rls8 = new InputWidgetBlock("Разрешающая способность по скорости", "", this);
-    
-    scrollLayout->addWidget(rls1);
-    scrollLayout->addWidget(rls2);
-    scrollLayout->addWidget(rls3);
-    scrollLayout->addWidget(rls4);
-    scrollLayout->addWidget(rls5);
-    scrollLayout->addWidget(rls6);
-    scrollLayout->addWidget(rls7);
-    scrollLayout->addWidget(rls8);
+
+    rlsVec = {rls1, rls2, rls3, rls4, rls5, rls6, rls7, rls8};
+
+    for(int i = 0; i<rlsVec.size(); ++i)
+    {
+        scrollLayout->addWidget(rlsVec[i]);
+    }
+
+    connect(btnRls, &QPushButton::clicked, this, [this](){ this->readFromFile(rlsVec, "inputRLS.txt"); });
     //Signal params (s)
+    QPushButton* btnS = new QPushButton("Загрузить из файла inputSig.txt", this);
+    scrollLayout->addWidget(btnS);
+
+    InputWidgetBlock* s1 = new InputWidgetBlock("Скорость света", "м/c", this);
+    InputWidgetBlock* s2 = new InputWidgetBlock("Частота повторения", "Гц", this);
+
+    InputWidgetBlock* s4 = new InputWidgetBlock("Время контакта с целью", "с", this);
+
+
+
+
+    InputWidgetBlock* s8 = new InputWidgetBlock("Скважность ФМ сигнала", "", this);
+
+    sVec = {s1, s2, s4, s8};
+
+    for(int i = 0; i<sVec.size(); ++i)
+    {
+        scrollLayout->addWidget(sVec[i]);
+    }
+
+    connect(btnS, &QPushButton::clicked, this, [this](){ this->readFromFile(sVec, "inputSig.txt"); });
     //Target params (t)
+    QPushButton* btnT = new QPushButton("Загрузить из файла inputTarg.txt", this);
+    scrollLayout->addWidget(btnT);
+
+    InputWidgetBlock* t1 = new InputWidgetBlock("ЭПР цели", "м^2", this);
+    InputWidgetBlock* t2 = new InputWidgetBlock("Дальность цели", "m", this);
+    InputWidgetBlock* t3 = new InputWidgetBlock("Затухание на трассе", "дБ/км", this);
+
+    tVec = {t1, t2, t3};
+
+    for(int i = 0; i<tVec.size(); ++i)
+    {
+        scrollLayout->addWidget(tVec[i]);
+    }
+
+    connect(btnT, &QPushButton::clicked, this, [this](){ this->readFromFile(tVec, "inputTarg.txt"); });
     //Noise params (n)
+    QPushButton* btnN = new QPushButton("Загрузить из файла inputNoise.txt", this);
+    scrollLayout->addWidget(btnN);
+
+    InputWidgetBlock* n1 = new InputWidgetBlock("Спектральная плотность мощности помехи", "Вт/Гц", this);
+    InputWidgetBlock* n2 = new InputWidgetBlock("Эффективная ширина спектра помехи", "Гц", this);
+    InputWidgetBlock* n3 = new InputWidgetBlock("Максимальный КУ антенны САП", "", this);
+    InputWidgetBlock* n4 = new InputWidgetBlock("Уровень нормированной ДН РЛС в направлении САП", "", this);
+    InputWidgetBlock* n5 = new InputWidgetBlock("Расхождение поляризаций антенн РЛС и САП", "", this);
+    InputWidgetBlock* n6 = new InputWidgetBlock("Дальность САП в режиме помеха прикрытия", "", this);
+
+    nVec = {n1, n2, n3, n4, n5, n6};
+
+    for(int i = 0; i<nVec.size(); ++i)
+    {
+        scrollLayout->addWidget(nVec[i]);
+    }
+
+    connect(btnN, &QPushButton::clicked, this, [this](){ this->readFromFile(nVec, "inputNoise.txt"); });
     //Receiver (rec)
+    QPushButton* btnRec = new QPushButton("Загрузить из файла inputReceiver.txt", this);
+    scrollLayout->addWidget(btnRec);
+
+    InputWidgetBlock* rec1 = new InputWidgetBlock("Дальность разведприемника", "м", this);
+    InputWidgetBlock* rec2 = new InputWidgetBlock("КУ антенны", "", this);
+    InputWidgetBlock* rec3 = new InputWidgetBlock("Уровень нормированной ДН РЛС в направлении РП", "", this);
+    InputWidgetBlock* rec4 = new InputWidgetBlock("Коэффициент шума приемника", "", this);
+    InputWidgetBlock* rec5 = new InputWidgetBlock("ВПО", "", this);
+    InputWidgetBlock* rec6 = new InputWidgetBlock("ВЛТ", "", this);
+    InputWidgetBlock* rec7 = new InputWidgetBlock("Ширина ПП приемника", "", this);
+    InputWidgetBlock* rec8 = new InputWidgetBlock("Время интегрирования", "", this);
+    InputWidgetBlock* rec9 = new InputWidgetBlock("Коэффициент энергетических потерь", "", this);
+    InputWidgetBlock* rec10 = new InputWidgetBlock("Расхождение поляризаций антенн РЛС и РП", "", this);
+
+    recVec = {rec1, rec2, rec3, rec4, rec5, rec6, rec7, rec8, rec9, rec10};
+
+    for(int i = 0; i<recVec.size(); ++i)
+    {
+        scrollLayout->addWidget(recVec[i]);
+    }
+
+    connect(btnRec, &QPushButton::clicked, this, [this](){ this->readFromFile(recVec, "inputReceiver.txt"); });
+
+    QPushButton* btnSubmit = new QPushButton("Подтвердить введенные данные", this);
+    scrollLayout->addWidget(btnSubmit);
 
     scrollArea = new QScrollArea();
     scrollArea->setWidget(scrollWidg);
@@ -192,7 +285,15 @@ InputWidget::InputWidget(QWidget *parent)
     layout->addWidget(scrollArea, 1);
 }
 
-void InputWidget::readFromFile(std::vector<InputWidgetBlock*> lines, QString file)
+void InputWidget::readFromFile(std::vector<InputWidgetBlock*> lines, QString filename)
 {
-
+    QFile file(QCoreApplication::applicationDirPath()+"/"+filename);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
+        return;
+    QTextStream in(&file);
+    QStringList fields = in.readLine().split(";");
+    for(int i = 0; i<lines.size(); ++i)
+    {
+        lines[i]->setText(fields[i]);
+    }
 };

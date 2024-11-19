@@ -1,6 +1,8 @@
 #ifndef INPUTWIDGET_H
 #define INPUTWIDGET_H
 
+#include <QDebug>
+
 #include <iostream>
 #include <cmath>
 #include <string>
@@ -23,6 +25,7 @@ public:
 #include <QFile>
 #include <QString>
 #include <QScrollArea>
+#include <QCoreApplication>
 
 class InputWidgetBlock : public QWidget
 {
@@ -30,8 +33,7 @@ class InputWidgetBlock : public QWidget
 
 public:
     InputWidgetBlock(QString title, QString unit, QWidget *parent = nullptr);
-// signals:
-//     void lineSubmit(QLineEdit* input, QLabel* output);
+    void setText(QString text);
 private slots:
     void calculateExpr();
 private:
@@ -52,11 +54,17 @@ class InputWidget : public QWidget
 public:
     InputWidget(QWidget *parent = nullptr);
 private slots:
-    void readFromFile(std::vector<InputWidgetBlock*> lines, QString file);
+    void readFromFile(std::vector<InputWidgetBlock*> lines, QString filename);
 private:
     QVBoxLayout* layout;
     QVBoxLayout* scrollLayout;
     QScrollArea* scrollArea;
     QWidget* scrollWidg;
+
+    std::vector<InputWidgetBlock*> rlsVec;
+    std::vector<InputWidgetBlock*> sVec;
+    std::vector<InputWidgetBlock*> tVec;
+    std::vector<InputWidgetBlock*> nVec;
+    std::vector<InputWidgetBlock*> recVec;
 };
 #endif // INPUTWIDGET_H
