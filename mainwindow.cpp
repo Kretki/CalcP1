@@ -13,12 +13,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     // toggleWidg = new ToggleWidget(centralWidg);
     // layout->addWidget(toggleWidg);
-
     // btnNext = new QPushButton("Следующий шаг", centralWidg);
     // layout->addWidget(btnNext);
     InputWidget* inp = new InputWidget(this);
     layout->addWidget(inp);
-    
+
     this->setCentralWidget(centralWidg);
 }
 

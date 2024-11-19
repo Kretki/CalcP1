@@ -1,5 +1,54 @@
 #include "inputwidget.h"
 
+Calculator::Calculator(){};
+
+double Calculator::calculate(std::string input)
+{
+    bool check = false;
+    double dFirst;
+    double dSecond;
+    double res = 0;
+    for(int i = 0; i<input.size(); ++i)
+    {
+        if(!check)
+        {
+            if((input[i]>='0' && input[i]<='9') || (input[i] == '.')) 
+            {
+                sFirst+=input[i];
+            } 
+            else 
+            {
+                check = true;
+                sign += input[i];
+            }
+        } 
+        else 
+        {
+            sSecond+=input[i];
+        }
+    }
+    dFirst = std::stod(sFirst);
+    dSecond = std::stod(sSecond);
+    if(sign == "+")
+    {
+        res = dFirst+dSecond;
+    } 
+    else if(sign == "-")
+    {
+        res = dFirst-dSecond;
+    }
+    else if(sign == "*")
+    {
+        res = dFirst*dSecond;
+    }
+    else if(sign == "/")
+    {
+        res = dFirst/dSecond;
+    }
+    return res;
+};
+
+
 InputWidgetBlock::InputWidgetBlock(QString title, QWidget *parent)
     : QWidget(parent)
 {
@@ -27,9 +76,11 @@ void InputWidgetBlock::calculateExpr()
 
     QString modExpression = expression;
     modExpression.replace(QRegularExpression("\\^"), "**");
-    double decimalResult = 0.0;
-    // toFraction(decimalResult);
-    QString resultText = QString::number(decimalResult);
+
+    Calculator calc = Calculator();
+    double res = calc.calculate(QString("10.1*20").toStdString());
+    
+    QString resultText = QString::number(res);
 
     output->setText(resultText);
 }

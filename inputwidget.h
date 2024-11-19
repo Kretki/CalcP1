@@ -1,6 +1,24 @@
 #ifndef INPUTWIDGET_H
 #define INPUTWIDGET_H
 
+#include <QDebug>
+
+#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+
+class Calculator
+{
+public:
+    Calculator();
+    double calculate(std::string input);
+private:
+    std::string sFirst = "";
+    std::string sign = "";
+    std::string sSecond = "";
+};
+
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -12,8 +30,6 @@
 #include <QRegularExpression>
 #include <QtMath>
 #include <QRegularExpression>
-
-#include <QDebug>
 
 class InputWidgetBlock : public QWidget
 {
