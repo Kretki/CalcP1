@@ -30,6 +30,8 @@ add_executable(CalcP
   togglewidget.cpp
   inputwidget.h
   inputwidget.cpp
+  calculatorwidget.h
+  calculatorwidget.cpp
 )
 
 target_link_libraries(CalcP PRIVATE Qt5::Core Qt5::Widgets)

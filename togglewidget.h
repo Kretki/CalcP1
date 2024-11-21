@@ -12,6 +12,7 @@ class ToggleWidget : public QWidget
 
 public:
     ToggleWidget(QWidget *parent = nullptr);
+    ~ToggleWidget();
 signals:
     void modeSingle();
     void modeMultiple();

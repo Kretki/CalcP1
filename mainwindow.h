@@ -3,6 +3,7 @@
 
 #include "togglewidget.h"
 #include "inputwidget.h"
+#include "calculatorwidget.h"
 
 #include <QMainWindow>
 #include <QVBoxLayout>
@@ -28,5 +29,7 @@ private:
 
     ToggleWidget* toggleWidg;
     QPushButton* btnNext;
+
+    Variables vars;
 };
 #endif // MAINWINDOW_H

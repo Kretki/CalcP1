@@ -14,6 +14,9 @@ ToggleWidget::ToggleWidget(QWidget *parent)
     connect(changeBtn, &QPushButton::clicked, this, &ToggleWidget::changeMode);
 }
 
+ToggleWidget::~ToggleWidget()
+{}
+
 void ToggleWidget::changeMode() 
 {
     if(textLbl->text() == "Однопозиционная")

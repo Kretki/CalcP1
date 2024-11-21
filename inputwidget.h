@@ -26,13 +26,17 @@ public:
 #include <QString>
 #include <QScrollArea>
 #include <QCoreApplication>
+#include <QPointer>
+
+#include "calculatorwidget.h"
 
 class InputWidgetBlock : public QWidget
 {
     Q_OBJECT
 
 public:
-    InputWidgetBlock(QString title, QString unit, QWidget *parent = nullptr);
+    InputWidgetBlock(QString title, QString unit, double& var, QWidget *parent = nullptr);
+    ~InputWidgetBlock();
     void setText(QString text);
 private slots:
     void calculateExpr();
@@ -45,6 +49,8 @@ private:
     QLabel* titleLbl;
     QLineEdit* input;
     QLabel* output;
+
+    QPointer<double> var;
 };
 
 class InputWidget : public QWidget
@@ -52,7 +58,8 @@ class InputWidget : public QWidget
     Q_OBJECT
 
 public:
-    InputWidget(QWidget *parent = nullptr);
+    InputWidget(Variables& vars, QWidget *parent = nullptr);
+    ~InputWidget();
 private slots:
     void readFromFile(std::vector<InputWidgetBlock*> lines, QString filename);
 private:
