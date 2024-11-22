@@ -20,9 +20,12 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
+private slots:
+    void startCalc();
 private:
     Ui::MainWindow *ui;
+
+    CalculatorWidget* calc;
 
     QWidget* centralWidg;
     QVBoxLayout* layout;

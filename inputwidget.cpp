@@ -138,7 +138,7 @@ ShowWidgetBlock::ShowWidgetBlock(QString title, QString unit, std::array<double,
 
 ShowWidgetBlock::~ShowWidgetBlock()
 {
-    delete vars;
+    // delete vars;
 }
 void ShowWidgetBlock::valuesChanged()
 {
@@ -147,6 +147,7 @@ void ShowWidgetBlock::valuesChanged()
         if(vars->at(9) != 0.)
         {
             output->setText(QString::number(1/vars->at(9)) + " " + this->unit);
+            vars->at(10) = 1/vars->at(9);
         }
     }
     else if(titleLbl->text() == "Девиация")
@@ -154,6 +155,7 @@ void ShowWidgetBlock::valuesChanged()
         if(vars->at(6) != 0.)
         {
             output->setText(QString::number(vars->at(8)/(2*vars->at(6))) + " " + this->unit);
+            vars->at(14) = vars->at(8)/(2*vars->at(6));
         }
     }
     else
@@ -161,6 +163,8 @@ void ShowWidgetBlock::valuesChanged()
         if(vars->at(8) != 0.)
         {
             output->setText(QString::number(2*vars->at(6)/vars->at(8)) + " " + this->unit);
+            vars->at(12) = 2*vars->at(6)/vars->at(8);
+            vars->at(13) = 2*vars->at(6)/vars->at(8);
         }
     }
 }
@@ -191,7 +195,7 @@ InputWidgetBlock::InputWidgetBlock(QString title, QString unit, double& var, QWi
 
 InputWidgetBlock::~InputWidgetBlock()
 {
-    delete var;
+    // delete var;
 }
 
 void InputWidgetBlock::setText(QString text)

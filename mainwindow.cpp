@@ -25,9 +25,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->setCentralWidget(centralWidg);
 
-    CalculatorWidget* calc = new CalculatorWidget(vars, this);
+    calc = new CalculatorWidget(vars, this);
 
-    connect(btnSubmit, &QPushButton::clicked, calc, &CalculatorWidget::calculate);
+    connect(btnSubmit, &QPushButton::clicked, this, &MainWindow::startCalc);
 }
 
 MainWindow::~MainWindow()
@@ -36,3 +36,8 @@ MainWindow::~MainWindow()
     delete vars;
 }
 
+void MainWindow::startCalc()
+{
+    calc->calculate();
+    this->setCentralWidget(calc);
+}
