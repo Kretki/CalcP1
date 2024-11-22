@@ -1,8 +1,6 @@
 #ifndef INPUTWIDGET_H
 #define INPUTWIDGET_H
 
-#include <QDebug>
-
 #include <iostream>
 #include <cmath>
 #include <string>
@@ -26,9 +24,27 @@ public:
 #include <QString>
 #include <QScrollArea>
 #include <QCoreApplication>
-#include <QPointer>
+#include <QTextStream>
 
-#include "calculatorwidget.h"
+class ShowWidgetBlock : public QWidget
+{
+    Q_OBJECT
+
+public:
+    ShowWidgetBlock(QString title, QString unit, std::array<double, 36>* vars, QWidget *parent = nullptr);
+    ~ShowWidgetBlock();
+public slots:
+    void valuesChanged();
+private:
+    QVBoxLayout* layout;
+
+    QString unit;
+
+    QLabel* titleLbl;
+    QLabel* output;
+
+    std::array<double, 36>* vars;
+};
 
 class InputWidgetBlock : public QWidget
 {
@@ -38,6 +54,8 @@ public:
     InputWidgetBlock(QString title, QString unit, double& var, QWidget *parent = nullptr);
     ~InputWidgetBlock();
     void setText(QString text);
+    
+    QLineEdit* input;
 private slots:
     void calculateExpr();
 private:
@@ -47,10 +65,9 @@ private:
     QString unit;
 
     QLabel* titleLbl;
-    QLineEdit* input;
     QLabel* output;
 
-    QPointer<double> var;
+    double* var;
 };
 
 class InputWidget : public QWidget
@@ -58,7 +75,7 @@ class InputWidget : public QWidget
     Q_OBJECT
 
 public:
-    InputWidget(Variables& vars, QWidget *parent = nullptr);
+    InputWidget(std::array<double, 36>* vars, QWidget *parent = nullptr);
     ~InputWidget();
 private slots:
     void readFromFile(std::vector<InputWidgetBlock*> lines, QString filename);

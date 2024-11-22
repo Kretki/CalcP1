@@ -30,6 +30,6 @@ private:
     ToggleWidget* toggleWidg;
     QPushButton* btnNext;
 
-    Variables vars;
+    std::vector<double>* vars;
 };
 #endif // MAINWINDOW_H

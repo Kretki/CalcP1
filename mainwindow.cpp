@@ -11,8 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
     layout = new QVBoxLayout(centralWidg);
     centralWidg->setLayout(layout);
 
-    Variables vars;
-
+    // vars = new std::vector<double>(36, 0.0);
+    std::array<double, 36>* vars = new std::array<double, 36>{};
     // toggleWidg = new ToggleWidget(centralWidg);
     // layout->addWidget(toggleWidg);
     // btnNext = new QPushButton("Следующий шаг", centralWidg);
@@ -33,5 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete vars;
 }
 

@@ -118,6 +118,52 @@ std::pair<double, bool> Calculator::calculateString(std::string input)
     return {numbers[0], true};
 }
 
+ShowWidgetBlock::ShowWidgetBlock(QString title, QString unit, std::array<double, 36>* vars, QWidget *parent)
+{
+    layout = new QVBoxLayout(this);
+    this->setLayout(layout);
+
+    titleLbl = new QLabel(title, this);
+    layout->addWidget(titleLbl);
+
+    this->unit = unit;
+    this->vars = vars;
+
+    // input->setPlaceholderText(placeholder);
+    output = new QLabel(this);
+    layout->addWidget(output);
+
+    this->setMaximumHeight(QFontMetrics(output->font()).height()*5);
+}
+
+ShowWidgetBlock::~ShowWidgetBlock()
+{
+    delete vars;
+}
+void ShowWidgetBlock::valuesChanged()
+{
+    if(titleLbl->text() == "Период повторения")
+    {
+        if(vars->at(9) != 0.)
+        {
+            output->setText(QString::number(1/vars->at(9)) + " " + this->unit);
+        }
+    }
+    else if(titleLbl->text() == "Девиация")
+    {
+        if(vars->at(6) != 0.)
+        {
+            output->setText(QString::number(vars->at(8)/(2*vars->at(6))) + " " + this->unit);
+        }
+    }
+    else
+    {
+        if(vars->at(8) != 0.)
+        {
+            output->setText(QString::number(2*vars->at(6)/vars->at(8)) + " " + this->unit);
+        }
+    }
+}
 
 InputWidgetBlock::InputWidgetBlock(QString title, QString unit, double& var, QWidget *parent)
     : QWidget(parent)
@@ -145,7 +191,7 @@ InputWidgetBlock::InputWidgetBlock(QString title, QString unit, double& var, QWi
 
 InputWidgetBlock::~InputWidgetBlock()
 {
-    // delete var;
+    delete var;
 }
 
 void InputWidgetBlock::setText(QString text)
@@ -168,7 +214,7 @@ void InputWidgetBlock::calculateExpr()
     }
 }
 
-InputWidget::InputWidget(Variables& vars, QWidget *parent)
+InputWidget::InputWidget(std::array<double, 36>* vars, QWidget *parent)
     : QWidget(parent)
 {
     layout = new QVBoxLayout(this);
@@ -183,14 +229,14 @@ InputWidget::InputWidget(Variables& vars, QWidget *parent)
     QPushButton* btnRls = new QPushButton("Загрузить из файла inputRLS.txt", this);
     scrollLayout->addWidget(btnRls);
 
-    InputWidgetBlock* rls1 = new InputWidgetBlock("Импульсная мощность РЛС", "Вт", vars.Pi, this);
-    InputWidgetBlock* rls2 = new InputWidgetBlock("КУ антенны", "", vars.Gc, this);
-    InputWidgetBlock* rls3 = new InputWidgetBlock("КШ приемника", "", vars.Nsh, this);
-    InputWidgetBlock* rls4 = new InputWidgetBlock("Рабочая частота", "Гц", vars.fc, this);
-    InputWidgetBlock* rls5 = new InputWidgetBlock("ВЛТ", "", vars.Fc, this);
-    InputWidgetBlock* rls6 = new InputWidgetBlock("Пороговая вероятность обнаружения", "", vars.Dpor, this);
-    InputWidgetBlock* rls7 = new InputWidgetBlock("Разрешающая способность по дальности", "", vars.delR, this);
-    InputWidgetBlock* rls8 = new InputWidgetBlock("Разрешающая способность по скорости", "", vars.delVr, this);
+    InputWidgetBlock* rls1 = new InputWidgetBlock("Импульсная мощность РЛС", "Вт", vars->at(0), this);
+    InputWidgetBlock* rls2 = new InputWidgetBlock("КУ антенны", "", vars->at(1), this);
+    InputWidgetBlock* rls3 = new InputWidgetBlock("КШ приемника", "", vars->at(2), this);
+    InputWidgetBlock* rls4 = new InputWidgetBlock("Рабочая частота", "Гц", vars->at(3), this);
+    InputWidgetBlock* rls5 = new InputWidgetBlock("ВЛТ", "", vars->at(4), this);
+    InputWidgetBlock* rls6 = new InputWidgetBlock("Пороговая вероятность обнаружения", "", vars->at(5), this);
+    InputWidgetBlock* rls7 = new InputWidgetBlock("Разрешающая способность по дальности", "", vars->at(6), this);
+    InputWidgetBlock* rls8 = new InputWidgetBlock("Разрешающая способность по скорости", "", vars->at(7), this);
 
     rlsVec = {rls1, rls2, rls3, rls4, rls5, rls6, rls7, rls8};
 
@@ -198,37 +244,51 @@ InputWidget::InputWidget(Variables& vars, QWidget *parent)
     {
         scrollLayout->addWidget(rlsVec[i]);
     }
-
+    // this->readFromFile(rlsVec, "inputRLS.txt");
     connect(btnRls, &QPushButton::clicked, this, [this](){ this->readFromFile(rlsVec, "inputRLS.txt"); });
     //Signal params (s)
     QPushButton* btnS = new QPushButton("Загрузить из файла inputSig.txt", this);
     scrollLayout->addWidget(btnS);
 
-    InputWidgetBlock* s1 = new InputWidgetBlock("Скорость света", "м/c", vars.c, this);
-    InputWidgetBlock* s2 = new InputWidgetBlock("Частота повторения", "Гц", vars.Fpsig, this);
+    InputWidgetBlock* s1 = new InputWidgetBlock("Скорость света", "м/c", vars->at(8), this);
+    InputWidgetBlock* s2 = new InputWidgetBlock("Частота повторения", "Гц", vars->at(9), this);
+    ShowWidgetBlock* s3 = new ShowWidgetBlock("Период повторения", "с", vars, this);
+    connect(s2->input, &QLineEdit::textChanged, s3, &ShowWidgetBlock::valuesChanged);
+    InputWidgetBlock* s4 = new InputWidgetBlock("Время контакта с целью", "с", vars->at(11), this);
+    ShowWidgetBlock* s5 = new ShowWidgetBlock("Длительность импульсного сигнала", "", vars, this);
+    connect(rls7->input, &QLineEdit::textChanged, s5, &ShowWidgetBlock::valuesChanged);
+    connect(s1->input, &QLineEdit::textChanged, s5, &ShowWidgetBlock::valuesChanged);
+    ShowWidgetBlock* s6 = new ShowWidgetBlock("Длительность ЛЧМ сигнала", "", vars, this);
+    connect(rls7->input, &QLineEdit::textChanged, s6, &ShowWidgetBlock::valuesChanged);
+    connect(s1->input, &QLineEdit::textChanged, s6, &ShowWidgetBlock::valuesChanged);
+    ShowWidgetBlock* s7 = new ShowWidgetBlock("Девиация", "", vars, this);
+    connect(rls7->input, &QLineEdit::textChanged, s7, &ShowWidgetBlock::valuesChanged);
+    connect(s1->input, &QLineEdit::textChanged, s7, &ShowWidgetBlock::valuesChanged);
+    ShowWidgetBlock* s8 = new ShowWidgetBlock("Длитльность кванта ФМ сигнала", "", vars, this);
+    connect(rls7->input, &QLineEdit::textChanged, s8, &ShowWidgetBlock::valuesChanged);
+    connect(s1->input, &QLineEdit::textChanged, s8, &ShowWidgetBlock::valuesChanged);
+    InputWidgetBlock* s9 = new InputWidgetBlock("Скважность ФМ сигнала", "", vars->at(16), this);
 
-    InputWidgetBlock* s4 = new InputWidgetBlock("Время контакта с целью", "с", vars.Tk, this);
+    sVec = {s1, s2, s4, s9};
 
-
-
-
-    InputWidgetBlock* s8 = new InputWidgetBlock("Скважность ФМ сигнала", "", vars.Q, this);
-
-    sVec = {s1, s2, s4, s8};
-
-    for(int i = 0; i<sVec.size(); ++i)
-    {
-        scrollLayout->addWidget(sVec[i]);
-    }
+    scrollLayout->addWidget(s1);
+    scrollLayout->addWidget(s2);
+    scrollLayout->addWidget(s3);
+    scrollLayout->addWidget(s4);
+    scrollLayout->addWidget(s5);
+    scrollLayout->addWidget(s6);
+    scrollLayout->addWidget(s7);
+    scrollLayout->addWidget(s8);
+    scrollLayout->addWidget(s9);
 
     connect(btnS, &QPushButton::clicked, this, [this](){ this->readFromFile(sVec, "inputSig.txt"); });
     //Target params (t)
     QPushButton* btnT = new QPushButton("Загрузить из файла inputTarg.txt", this);
     scrollLayout->addWidget(btnT);
 
-    InputWidgetBlock* t1 = new InputWidgetBlock("ЭПР цели", "м^2", vars.eprc, this);
-    InputWidgetBlock* t2 = new InputWidgetBlock("Дальность цели", "m", vars.Dc, this);
-    InputWidgetBlock* t3 = new InputWidgetBlock("Затухание на трассе", "дБ/км", vars.alpha, this);
+    InputWidgetBlock* t1 = new InputWidgetBlock("ЭПР цели", "м^2", vars->at(17), this);
+    InputWidgetBlock* t2 = new InputWidgetBlock("Дальность цели", "m", vars->at(18), this);
+    InputWidgetBlock* t3 = new InputWidgetBlock("Затухание на трассе", "дБ/км", vars->at(19), this);
 
     tVec = {t1, t2, t3};
 
@@ -242,12 +302,12 @@ InputWidget::InputWidget(Variables& vars, QWidget *parent)
     QPushButton* btnN = new QPushButton("Загрузить из файла inputNoise.txt", this);
     scrollLayout->addWidget(btnN);
 
-    InputWidgetBlock* n1 = new InputWidgetBlock("Спектральная плотность мощности помехи", "Вт/Гц", vars.Spp, this);
-    InputWidgetBlock* n2 = new InputWidgetBlock("Эффективная ширина спектра помехи", "Гц", vars.delFp, this);
-    InputWidgetBlock* n3 = new InputWidgetBlock("Максимальный КУ антенны САП", "", vars.GpNoise, this);
-    InputWidgetBlock* n4 = new InputWidgetBlock("Уровень нормированной ДН РЛС в направлении САП", "", vars.Apom, this);
-    InputWidgetBlock* n5 = new InputWidgetBlock("Расхождение поляризаций антенн РЛС и САП", "", vars.gammaPNoise, this);
-    InputWidgetBlock* n6 = new InputWidgetBlock("Дальность САП в режиме помеха прикрытия", "", vars.Dp, this);
+    InputWidgetBlock* n1 = new InputWidgetBlock("Спектральная плотность мощности помехи", "Вт/Гц", vars->at(20), this);
+    InputWidgetBlock* n2 = new InputWidgetBlock("Эффективная ширина спектра помехи", "Гц", vars->at(21), this);
+    InputWidgetBlock* n3 = new InputWidgetBlock("Максимальный КУ антенны САП", "", vars->at(22), this);
+    InputWidgetBlock* n4 = new InputWidgetBlock("Уровень нормированной ДН РЛС в направлении САП", "", vars->at(23), this);
+    InputWidgetBlock* n5 = new InputWidgetBlock("Расхождение поляризаций антенн РЛС и САП", "", vars->at(24), this);
+    InputWidgetBlock* n6 = new InputWidgetBlock("Дальность САП в режиме помеха прикрытия", "", vars->at(25), this);
 
     nVec = {n1, n2, n3, n4, n5, n6};
 
@@ -261,16 +321,16 @@ InputWidget::InputWidget(Variables& vars, QWidget *parent)
     QPushButton* btnRec = new QPushButton("Загрузить из файла inputReceiver.txt", this);
     scrollLayout->addWidget(btnRec);
 
-    InputWidgetBlock* rec1 = new InputWidgetBlock("Дальность разведприемника", "м", vars.Rp, this);
-    InputWidgetBlock* rec2 = new InputWidgetBlock("КУ антенны", "", vars.GpRec, this);
-    InputWidgetBlock* rec3 = new InputWidgetBlock("Уровень нормированной ДН РЛС в направлении РП", "", vars.Arp, this);
-    InputWidgetBlock* rec4 = new InputWidgetBlock("Коэффициент шума приемника", "", vars.Nshr, this);
-    InputWidgetBlock* rec5 = new InputWidgetBlock("ВПО", "", vars.Do, this);
-    InputWidgetBlock* rec6 = new InputWidgetBlock("ВЛТ", "", vars.FpRec, this);
-    InputWidgetBlock* rec7 = new InputWidgetBlock("Ширина ПП приемника", "", vars.delFpRec, this);
-    InputWidgetBlock* rec8 = new InputWidgetBlock("Время интегрирования", "", vars.TpRec, this);
-    InputWidgetBlock* rec9 = new InputWidgetBlock("Коэффициент энергетических потерь", "", vars.ro, this);
-    InputWidgetBlock* rec10 = new InputWidgetBlock("Расхождение поляризаций антенн РЛС и РП", "", vars.gammaPRec, this);
+    InputWidgetBlock* rec1 = new InputWidgetBlock("Дальность разведприемника", "м", vars->at(26), this);
+    InputWidgetBlock* rec2 = new InputWidgetBlock("КУ антенны", "", vars->at(27), this);
+    InputWidgetBlock* rec3 = new InputWidgetBlock("Уровень нормированной ДН РЛС в направлении РП", "", vars->at(28), this);
+    InputWidgetBlock* rec4 = new InputWidgetBlock("Коэффициент шума приемника", "", vars->at(29), this);
+    InputWidgetBlock* rec5 = new InputWidgetBlock("ВПО", "", vars->at(30), this);
+    InputWidgetBlock* rec6 = new InputWidgetBlock("ВЛТ", "", vars->at(31), this);
+    InputWidgetBlock* rec7 = new InputWidgetBlock("Ширина ПП приемника", "", vars->at(32), this);
+    InputWidgetBlock* rec8 = new InputWidgetBlock("Время интегрирования", "", vars->at(33), this);
+    InputWidgetBlock* rec9 = new InputWidgetBlock("Коэффициент энергетических потерь", "", vars->at(34), this);
+    InputWidgetBlock* rec10 = new InputWidgetBlock("Расхождение поляризаций антенн РЛС и РП", "", vars->at(35), this);
 
     recVec = {rec1, rec2, rec3, rec4, rec5, rec6, rec7, rec8, rec9, rec10};
 
