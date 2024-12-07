@@ -1,8 +1,6 @@
 #ifndef CALCULATORWIDGET_H
 #define CALCULATORWIDGET_H
 
-#include <vector>
-
 // class Variables
 // {
 // public:
@@ -50,12 +48,15 @@
     // double gammaPRec;//Расхождение поляризаций антенн РЛС и РП       35
 // };
 
+#include <vector>
+
 #include <QDebug>
 
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QPen>
 #include <QScrollArea>
+#include <QWheelEvent>
 
 #include <math.h>
 
@@ -64,6 +65,26 @@
 #include <qwt_legend.h>
 #include <qwt_plot_grid.h>
 #include <qwt_symbol.h>
+#include <qwt_plot_zoomer.h>
+
+class QwtPlotZoom : public QwtPlot
+{
+    Q_OBJECT
+public:
+    QwtPlotZoom(QWidget *parent = nullptr,  double* l_in_min=nullptr, double* l_in_max=nullptr, double* l_in_step=nullptr, double* b_in_min=nullptr, double* b_in_max=nullptr, double* b_in_step=nullptr);
+    ~QwtPlotZoom();
+protected:
+    void wheelEvent(QWheelEvent *event) override;
+private:
+    QwtPlotZoomer* zoomer;
+    double* l_min;
+    double* l_max;
+    double* l_step;
+    double* b_min;
+    double* b_max;
+    double* b_step;
+};
+
 
 class CalculatorWidget : public QWidget
 {
@@ -75,6 +96,13 @@ public:
 public slots:
     void calculate();
 private:
+    void receive_base_data();
+    void prob_true_discover_graphics();
+    void noise_eff_coefficient_graphics();
+    void self_defense_prob_true_discover_graphics();
+    void self_defense_noise_eff_coefficient_graphics();
+
+
     double P_c(double Dc);
     double P_pp_imp(double Spp);
     double P_p_imp(double Dp, double Spp);
@@ -94,6 +122,21 @@ private:
     double k_imp_eff_act_noise(double Dc, double Dp, double Spp);
     double k_lchm_eff_act_noise(double Dc, double Dp, double Spp);
     double k_fkm_eff_act_noise(double Dc, double Dp, double Spp);
+    
+
+    double P_c_self_defense(double Dp);
+
+    double P_p_imp_self_defense(double Dp, double Spp);
+    double P_p_lchm_self_defense(double Dp, double Spp);
+    double P_p_fkm_self_defense(double Dp, double Spp);
+
+    double q_imp_self_defense(double Dp, double Spp);
+    double q_lchm_self_defense(double Dp, double Spp);
+    double q_fkm_self_defense(double Dp, double Spp);
+
+    double D_imp_self_defense(double Dp, double Spp);
+    double D_lchm_self_defense(double Dp, double Spp);
+    double D_fkm_self_defense(double Dp, double Spp);
 
     QVBoxLayout* layout;
     QVBoxLayout* scrollLayout;
@@ -108,6 +151,9 @@ private:
     QwtPlot* graph_4_plot;
     QwtPlot* graph_5_plot;
     QwtPlot* graph_6_plot;
+    QwtPlot* graph_7_plot;
+    QwtPlot* graph_8_plot;
+    QwtPlot* graph_9_plot;
 
     // Параметры РЛС
     double Pi;      //Импульсная мощность РЛС                        0

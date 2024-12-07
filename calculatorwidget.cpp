@@ -1,4 +1,72 @@
 #include "calculatorwidget.h"
+QwtPlotZoom::QwtPlotZoom(QWidget *parent, double* l_in_min, double* l_in_max, double* l_in_step, double* b_in_min, double* b_in_max, double* b_in_step) : QwtPlot(parent) 
+{
+    l_min = new double(0.0);
+    l_max = new double(1.0);
+    b_min = new double(0.0);
+    b_max = new double(1.0);
+
+    if(l_in_min)
+    {
+        delete l_min;
+        l_min = l_in_min;
+    }
+    if(l_in_max)
+    {
+        delete l_max;
+        l_max = l_in_max;
+    }
+    l_step = new double((*l_max - *l_min)/5);
+    if(l_in_step)
+        l_step = l_in_step;
+    if(b_in_min)
+    {
+        delete b_min;
+        b_min = b_in_min;
+    }
+    if(b_in_max)
+    {
+        delete b_max;
+        b_max = b_in_max;
+    }
+    b_step = new double((*b_max - *b_min)/5);
+    if(b_in_step)
+        b_step = b_in_step;
+     
+    this->setAxisScale( QwtPlot::yLeft, *l_min, *l_max, *l_step);
+    this->setAxisScale( QwtPlot::xBottom, *b_min, *b_max, *b_step);
+
+    zoomer = new QwtPlotZoomer(canvas());
+    zoomer->setRubberBand(QwtPicker::RectRubberBand);
+    zoomer->setRubberBandPen(QPen(Qt::red, 2));
+    zoomer->setTrackerMode(QwtPicker::AlwaysOn);
+    zoomer->setAxes( QwtPlot::xBottom, QwtPlot::yLeft );
+    zoomer->setZoomBase();
+}
+
+QwtPlotZoom::~QwtPlotZoom()
+{
+    delete l_min;
+    delete l_max;
+    delete l_step;
+    delete b_min;
+    delete b_max;
+    delete b_step;
+};
+
+void QwtPlotZoom::wheelEvent(QWheelEvent *event)
+{
+    const int zoomFactor = 2;
+    if (event->angleDelta().y() > 0)
+    {
+        zoomer->zoom(zoomFactor);
+    }
+    else
+    {
+        zoomer->zoom(-zoomFactor);
+    }
+    event->accept();
+}
 
 CalculatorWidget::CalculatorWidget(std::array<double, 36>* vars, QWidget *parent)
     : QWidget(parent)
@@ -18,96 +86,6 @@ CalculatorWidget::CalculatorWidget(std::array<double, 36>* vars, QWidget *parent
     layout->addWidget(scrollArea, 1);
 
     this->vars = vars;
-
-    graph_1_plot = new QwtPlot(this);
-    graph_1_plot->setTitle( "Зависимость вероятности правильного обнаружения от дальности до цели" );
-    graph_1_plot->setCanvasBackground( Qt::white );
-    graph_1_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
-    graph_1_plot->setAxisTitle( QwtPlot::xBottom, "Дальность до цели, м" );
-    graph_1_plot->setAxisScale( QwtPlot::yLeft, 0.0, 1.0 );
-    graph_1_plot->setAxisScale( QwtPlot::xBottom, 0.0, 20000.0, 5000.0 );
-    graph_1_plot->insertLegend( new QwtLegend() );
-
-
-    QwtPlotGrid* grid_1 = new QwtPlotGrid();
-    grid_1->attach( graph_1_plot );
-
-    scrollLayout->addWidget(graph_1_plot);
-
-    graph_2_plot = new QwtPlot(this);
-    graph_2_plot->setTitle( "Зависимость вероятности правильного обнаружения от дальности до цели (режим прикрытие)" );
-    graph_2_plot->setCanvasBackground( Qt::white );
-    graph_2_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
-    graph_2_plot->setAxisTitle( QwtPlot::xBottom, "Дальность помехи, м" );
-    graph_2_plot->setAxisScale( QwtPlot::yLeft, 0.0001, 0.000101 );
-    graph_2_plot->setAxisScale( QwtPlot::xBottom, 0.0, 100000.0, 20000.0 );
-    graph_2_plot->insertLegend( new QwtLegend() );
-
-    
-    QwtPlotGrid* grid_2 = new QwtPlotGrid();
-    grid_2->attach( graph_2_plot );
-
-    scrollLayout->addWidget(graph_2_plot);
-
-    graph_3_plot = new QwtPlot(this);
-    graph_3_plot->setTitle( "Зависимость характеристики обнаружения то спекртральной плотности мощности помехи" );
-    graph_3_plot->setCanvasBackground( Qt::white );
-    graph_3_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
-    graph_3_plot->setAxisTitle( QwtPlot::xBottom, "Спектральная плотность мощности помехи, Вт/Гц" );
-    graph_3_plot->setAxisScale( QwtPlot::yLeft, 0.0001, 0.00010015 );
-    graph_3_plot->setAxisScale( QwtPlot::xBottom, 0.0, 0.0001, 0.00002 );
-    graph_3_plot->insertLegend( new QwtLegend() );
-
-
-    QwtPlotGrid* grid_3 = new QwtPlotGrid();
-    grid_3->attach( graph_3_plot );
-
-    scrollLayout->addWidget(graph_3_plot);
-
-    graph_4_plot = new QwtPlot(this);
-    graph_4_plot->setTitle( "Зависимость зоны подавления РЛС от дальности до цели" );
-    graph_4_plot->setCanvasBackground( Qt::white );
-    graph_4_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициент эффективности помехи" );
-    graph_4_plot->setAxisTitle( QwtPlot::xBottom, "Дальность цели, м" );
-    graph_4_plot->setAxisScale( QwtPlot::yLeft, 0, 4*std::pow(10, 6), std::pow(10, 6) );
-    graph_4_plot->setAxisScale( QwtPlot::xBottom, 0.0, std::pow(10, 5), 2*std::pow(10, 4) );
-    graph_4_plot->insertLegend( new QwtLegend() );
-
-
-    QwtPlotGrid* grid_4 = new QwtPlotGrid();
-    grid_4->attach( graph_4_plot );
-
-    scrollLayout->addWidget(graph_4_plot);
-
-    graph_5_plot = new QwtPlot(this);
-    graph_5_plot->setTitle( "Зависимость зоны подавления РЛС от дальности помехи" );
-    graph_5_plot->setCanvasBackground( Qt::white );
-    graph_5_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициент эффективности помехи" );
-    graph_5_plot->setAxisTitle( QwtPlot::xBottom, "Дальность помехи, м" );
-    graph_5_plot->setAxisScale( QwtPlot::yLeft, 0, 6*std::pow(10, 8), 2*std::pow(10, 8) );
-    graph_5_plot->setAxisScale( QwtPlot::xBottom, 0.0, 4*std::pow(10, 4), 1*std::pow(10, 4) );
-    graph_5_plot->insertLegend( new QwtLegend() );
-
-
-    QwtPlotGrid* grid_5 = new QwtPlotGrid();
-    grid_5->attach( graph_5_plot );
-
-    scrollLayout->addWidget(graph_5_plot);
-
-    graph_6_plot = new QwtPlot(this);
-    graph_6_plot->setTitle( "Зависимость зоны подавления РЛС от спектральной плотности помехи" );
-    graph_6_plot->setCanvasBackground( Qt::white );
-    graph_6_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициент эффективности помехи" );
-    graph_6_plot->setAxisTitle( QwtPlot::xBottom, "Спектральная плотность помехи, Вт/Гц" );
-    graph_6_plot->setAxisScale( QwtPlot::yLeft, 0, 5*std::pow(10, 7), std::pow(10, 7) );
-    graph_6_plot->setAxisScale( QwtPlot::xBottom, 0.0, std::pow(10, -4), 2*std::pow(10, -5) );
-    graph_6_plot->insertLegend( new QwtLegend() );
-
-
-    QwtPlotGrid* grid_6 = new QwtPlotGrid();
-    grid_6->attach( graph_6_plot );
-
-    scrollLayout->addWidget(graph_6_plot);
 }
 
 CalculatorWidget::~CalculatorWidget()
@@ -116,9 +94,8 @@ CalculatorWidget::~CalculatorWidget()
     delete vars;
 }
 
-void CalculatorWidget::calculate()
+void CalculatorWidget::receive_base_data()
 {
-
     Pi = vars->at(0);      //Импульсная мощность РЛС                        0
     Gc = vars->at(1);      //КУ антенны                                     1
     Nsh = vars->at(2);     //КШ приемника                                   2
@@ -184,9 +161,60 @@ void CalculatorWidget::calculate()
 
     tc_fkm = Tpsig/Q;
     Tc_fkm = tc_fkm*N;
+}
+
+void CalculatorWidget::prob_true_discover_graphics()
+{
+    graph_1_plot = new QwtPlotZoom(this, nullptr, nullptr, nullptr, nullptr, new double(20000.0), new double(5000.0));
+    // graph_1_plot = new QwtPlot(this);
+    graph_1_plot->setTitle( "Зависимость вероятности правильного обнаружения от дальности до цели" );
+    graph_1_plot->setCanvasBackground( Qt::white );
+    graph_1_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
+    graph_1_plot->setAxisTitle( QwtPlot::xBottom, "Дальность до цели, м" );
+    // graph_1_plot->setAxisScale( QwtPlot::yLeft, 0.0, 1.0 );
+    // graph_1_plot->setAxisScale( QwtPlot::xBottom, 0.0, 20000.0, 5000.0 );
+    graph_1_plot->insertLegend( new QwtLegend() );
+
+
+    QwtPlotGrid* grid_1 = new QwtPlotGrid();
+    grid_1->attach( graph_1_plot );
+
+    scrollLayout->addWidget(graph_1_plot);
+
+    // graph_2_plot = new QwtPlot(this);
+    graph_2_plot = new QwtPlotZoom(this, new double(0.0001), new double(0.000101), nullptr, nullptr, new double(100000.0), new double(20000.0));
+    graph_2_plot->setTitle( "Зависимость вероятности правильного обнаружения от дальности до цели (режим прикрытие)" );
+    graph_2_plot->setCanvasBackground( Qt::white );
+    graph_2_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
+    graph_2_plot->setAxisTitle( QwtPlot::xBottom, "Дальность помехи, м" );
+    // graph_2_plot->setAxisScale( QwtPlot::yLeft, 0.0001, 0.000101 );
+    // graph_2_plot->setAxisScale( QwtPlot::xBottom, 0.0, 100000.0, 20000.0 );
+    graph_2_plot->insertLegend( new QwtLegend() );
+
+    
+    QwtPlotGrid* grid_2 = new QwtPlotGrid();
+    grid_2->attach( graph_2_plot );
+
+    scrollLayout->addWidget(graph_2_plot);
+
+    // graph_3_plot = new QwtPlot(this);
+    graph_3_plot = new QwtPlotZoom(this, new double(std::pow(10, -4)), new double(1.05*std::pow(10, -4)), nullptr, nullptr, new double(std::pow(10, -4)), new double(2*std::pow(10, -5)));
+    graph_3_plot->setTitle( "Зависимость характеристики обнаружения то спекртральной плотности мощности помехи" );
+    graph_3_plot->setCanvasBackground( Qt::white );
+    graph_3_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
+    graph_3_plot->setAxisTitle( QwtPlot::xBottom, "Спектральная плотность мощности помехи, Вт/Гц" );
+    // graph_3_plot->setAxisScale( QwtPlot::yLeft, 0.0001, 0.00010015 );
+    // graph_3_plot->setAxisScale( QwtPlot::xBottom, 0.0, 0.0001, 0.00002 );
+    graph_3_plot->insertLegend( new QwtLegend() );
+
+
+    QwtPlotGrid* grid_3 = new QwtPlotGrid();
+    grid_3->attach( graph_3_plot );
+
+    scrollLayout->addWidget(graph_3_plot);
+
 
     //Рисуем зависимость вероятности правильного обнаружения от дальности до цели
-
     QwtPlotCurve* curve_imp_1 = new QwtPlotCurve();
     curve_imp_1->setTitle( "Импульсный сигнал" );
     curve_imp_1->setPen( QPen( Qt::blue, 4 ) ),
@@ -209,7 +237,7 @@ void CalculatorWidget::calculate()
     QPolygonF points_lchm;
     QPolygonF points_fkm;
 
-    for(int i = 0; i<20000; i+=100)
+    for(int i = 0; i<20000; i+=10)
     {
         points_imp << QPointF(i, this->D_imp(i, DpBase, SppBase));
         points_lchm << QPointF(i, this->D_lchm(i, DpBase, SppBase));
@@ -293,6 +321,58 @@ void CalculatorWidget::calculate()
 
     curve_fkm_3->setSamples(points_fkm);
     curve_fkm_3->attach(graph_3_plot);
+}
+
+void CalculatorWidget::noise_eff_coefficient_graphics()
+{
+    // graph_4_plot = new QwtPlot(this);
+    graph_4_plot = new QwtPlotZoom(this, nullptr, new double(4*std::pow(10, 6)), nullptr, nullptr, new double(std::pow(10, 5)), new double(2*std::pow(10, 4)));
+    graph_4_plot->setTitle( "Зависимость зоны подавления РЛС от дальности до цели" );
+    graph_4_plot->setCanvasBackground( Qt::white );
+    graph_4_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициент эффективности помехи" );
+    graph_4_plot->setAxisTitle( QwtPlot::xBottom, "Дальность цели, м" );
+    // graph_4_plot->setAxisScale( QwtPlot::yLeft, 0, 4*std::pow(10, 6), std::pow(10, 6) );
+    // graph_4_plot->setAxisScale( QwtPlot::xBottom, 0.0, std::pow(10, 5), 2*std::pow(10, 4) );
+    graph_4_plot->insertLegend( new QwtLegend() );
+
+
+    QwtPlotGrid* grid_4 = new QwtPlotGrid();
+    grid_4->attach( graph_4_plot );
+
+    scrollLayout->addWidget(graph_4_plot);
+
+    // graph_5_plot = new QwtPlot(this);
+    graph_5_plot = new QwtPlotZoom(this, nullptr, new double(6*std::pow(10, 8)), nullptr, nullptr, new double(4*std::pow(10, 4)), new double(std::pow(10, 4)));
+    graph_5_plot->setTitle( "Зависимость зоны подавления РЛС от дальности помехи" );
+    graph_5_plot->setCanvasBackground( Qt::white );
+    graph_5_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициент эффективности помехи" );
+    graph_5_plot->setAxisTitle( QwtPlot::xBottom, "Дальность помехи, м" );
+    // graph_5_plot->setAxisScale( QwtPlot::yLeft, 0, 6*std::pow(10, 8), 2*std::pow(10, 8) );
+    // graph_5_plot->setAxisScale( QwtPlot::xBottom, 0.0, 4*std::pow(10, 4), 1*std::pow(10, 4) );
+    graph_5_plot->insertLegend( new QwtLegend() );
+
+
+    QwtPlotGrid* grid_5 = new QwtPlotGrid();
+    grid_5->attach( graph_5_plot );
+
+    scrollLayout->addWidget(graph_5_plot);
+
+    // graph_6_plot = new QwtPlot(this);
+    graph_6_plot = new QwtPlotZoom(this, nullptr, new double(5*std::pow(10, 7)), nullptr, nullptr, new double(std::pow(10, -4)), new double(2*std::pow(10, -5)));
+    graph_6_plot->setTitle( "Зависимость зоны подавления РЛС от спектральной плотности помехи" );
+    graph_6_plot->setCanvasBackground( Qt::white );
+    graph_6_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициент эффективности помехи" );
+    graph_6_plot->setAxisTitle( QwtPlot::xBottom, "Спектральная плотность помехи, Вт/Гц" );
+    // graph_6_plot->setAxisScale( QwtPlot::yLeft, 0, 5*std::pow(10, 7), std::pow(10, 7) );
+    // graph_6_plot->setAxisScale( QwtPlot::xBottom, 0.0, std::pow(10, -4), 2*std::pow(10, -5) );
+    graph_6_plot->insertLegend( new QwtLegend() );
+
+
+    QwtPlotGrid* grid_6 = new QwtPlotGrid();
+    grid_6->attach( graph_6_plot );
+
+    scrollLayout->addWidget(graph_6_plot);
+
 
     //Базы сигналов
     B_imp = delfpri*tc_imp;
@@ -304,9 +384,9 @@ void CalculatorWidget::calculate()
     K_p_fkm = N*B_fkm/(log10(1/Fc)/log10(1/Dpor)-1);
     
     //Рисуем зависимость коэффициента эффективности помехи от дальности цели
-    points_imp.clear();
-    points_lchm.clear();
-    points_fkm.clear();
+    QPolygonF points_imp;
+    QPolygonF points_lchm;
+    QPolygonF points_fkm;
 
     QwtPlotCurve* curve_imp_4 = new QwtPlotCurve();
     curve_imp_4->setTitle( "Импульсный сигнал" );
@@ -361,7 +441,6 @@ void CalculatorWidget::calculate()
 
     for(int i = 0; i<4*std::pow(10, 4); i+=5*std::pow(10, 2))
     {
-        qDebug() << i << " " << this->k_imp_eff_act_noise(50000, i, SppBase);
         points_imp << QPointF(i, this->k_imp_eff_act_noise(50000, i, SppBase));
         points_lchm << QPointF(i, this->k_lchm_eff_act_noise(50000, i, SppBase));
         points_fkm << QPointF(i, this->k_fkm_eff_act_noise(50000, i, SppBase));
@@ -411,5 +490,126 @@ void CalculatorWidget::calculate()
 
     curve_fkm_6->setSamples(points_fkm);
     curve_fkm_6->attach(graph_6_plot);
+}
 
+void CalculatorWidget::self_defense_prob_true_discover_graphics()
+{
+    //Рисуем зависимость вероятности правильного обнаружения цели от дальности цели и помехи
+    // graph_7_plot = new QwtPlot(this);
+    graph_7_plot = new QwtPlotZoom(this, new double(std::pow(10, -4)), new double(std::pow(10, -3)), nullptr, nullptr, new double(8*std::pow(10, 4)), nullptr);
+    graph_7_plot->setTitle( "Зависимость вероятности правильного обнаружения цели от дальности цели и помехи" );
+    graph_7_plot->setCanvasBackground( Qt::white );
+    graph_7_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
+    graph_7_plot->setAxisTitle( QwtPlot::xBottom, "Дальность до цели и помехи, м" );
+    // graph_7_plot->setAxisScale( QwtPlot::yLeft, std::pow(10, -4), 1.6*std::pow(10, -4), 2*std::pow(10, -5) );
+    // graph_7_plot->setAxisScale( QwtPlot::xBottom, 0.0, 2*std::pow(10, 4), 4*std::pow(10, 3) );
+    graph_7_plot->insertLegend( new QwtLegend() );
+
+
+    QwtPlotGrid* grid_7 = new QwtPlotGrid();
+    grid_7->attach( graph_7_plot );
+
+    scrollLayout->addWidget(graph_7_plot);
+
+
+    QPolygonF points_imp;
+    QPolygonF points_lchm;
+    QPolygonF points_fkm;
+
+    QwtPlotCurve* curve_imp_7 = new QwtPlotCurve();
+    curve_imp_7->setTitle( "Импульсный сигнал" );
+    curve_imp_7->setPen( QPen( Qt::blue, 4 ) ),
+    curve_imp_7->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_lchm_7 = new QwtPlotCurve();
+    curve_lchm_7->setTitle( "ЛЧМ сигнал" );
+    curve_lchm_7->setPen( QPen( Qt::green, 4 ) ),
+    curve_lchm_7->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_fkm_7 = new QwtPlotCurve();
+    curve_fkm_7->setTitle( "ФКМ сигнал" );
+    curve_fkm_7->setPen( QPen( Qt::red, 4 ) ),
+    curve_fkm_7->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    for(int i = 0; i<8*std::pow(10, 4); i+=std::pow(10, 2))
+    {
+        points_imp << QPointF(i, this->D_imp_self_defense(i, SppBase));
+        points_lchm << QPointF(i, this->D_lchm_self_defense(i, SppBase));
+        points_fkm << QPointF(i, this->D_fkm_self_defense(i, SppBase));
+    }
+
+    curve_imp_7->setSamples(points_imp);
+    curve_imp_7->attach(graph_7_plot);
+
+    curve_lchm_7->setSamples(points_lchm);
+    curve_lchm_7->attach(graph_7_plot);
+
+    curve_fkm_7->setSamples(points_fkm);
+    curve_fkm_7->attach(graph_7_plot);
+
+    //Рисуем зависимость вероятности правильного обнаружения цели от спектральной плотности помехи
+    // graph_8_plot = new QwtPlot(this);
+    graph_8_plot = new QwtPlotZoom(this, new double(std::pow(10, -4)), new double(1.01*std::pow(10, -4)), nullptr, nullptr, new double(std::pow(10, -4)), nullptr);
+    graph_8_plot->setTitle( "Зависимость вероятности правильного обнаружения цели от спектральной плотности помехи" );
+    graph_8_plot->setCanvasBackground( Qt::white );
+    graph_8_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
+    graph_8_plot->setAxisTitle( QwtPlot::xBottom, "Спектральная плотность мощности помехи, Вт/Гц" );
+    // graph_8_plot->setAxisScale( QwtPlot::yLeft, std::pow(10, -4), 1.01*std::pow(10, -4), std::pow(10, -7) );
+    // graph_8_plot->setAxisScale( QwtPlot::xBottom, 0.0, std::pow(10, -4), 2*std::pow(10, -5) );
+    graph_8_plot->insertLegend( new QwtLegend() );
+
+
+    QwtPlotGrid* grid_8 = new QwtPlotGrid();
+    grid_8->attach( graph_8_plot );
+
+    scrollLayout->addWidget(graph_8_plot);
+
+
+    points_imp.clear();
+    points_lchm.clear();
+    points_fkm.clear();
+
+    QwtPlotCurve* curve_imp_8 = new QwtPlotCurve();
+    curve_imp_8->setTitle( "Импульсный сигнал" );
+    curve_imp_8->setPen( QPen( Qt::blue, 4 ) ),
+    curve_imp_8->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_lchm_8 = new QwtPlotCurve();
+    curve_lchm_8->setTitle( "ЛЧМ сигнал" );
+    curve_lchm_8->setPen( QPen( Qt::green, 4 ) ),
+    curve_lchm_8->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_fkm_8 = new QwtPlotCurve();
+    curve_fkm_8->setTitle( "ФКМ сигнал" );
+    curve_fkm_8->setPen( QPen( Qt::red, 4 ) ),
+    curve_fkm_8->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    for(double i = 0; i<std::pow(10, -4); i+=std::pow(10, -7))
+    {
+        points_imp << QPointF(i, this->D_imp_self_defense(DpBase, i));
+        points_lchm << QPointF(i, this->D_lchm_self_defense(DpBase, i));
+        points_fkm << QPointF(i, this->D_fkm_self_defense(DpBase, i));
+    }
+
+    curve_imp_8->setSamples(points_imp);
+    curve_imp_8->attach(graph_8_plot);
+
+    curve_lchm_8->setSamples(points_lchm);
+    curve_lchm_8->attach(graph_8_plot);
+
+    curve_fkm_8->setSamples(points_fkm);
+    curve_fkm_8->attach(graph_8_plot);
+}
+
+void CalculatorWidget::self_defense_noise_eff_coefficient_graphics()
+{
+
+}
+
+void CalculatorWidget::calculate()
+{
+    this->receive_base_data();
+    this->prob_true_discover_graphics();
+    this->noise_eff_coefficient_graphics();
+    this->self_defense_prob_true_discover_graphics();
 }

@@ -97,3 +97,54 @@ double CalculatorWidget::k_fkm_eff_act_noise(double Dc, double Dp, double Spp)
     //Коэффициент эффективности помехи ФКМ сигнала (отношение мощности активной помехи к мощности сигнала на входе приемника РЛС)
     return P_pp_fkm(Spp)*this->GpNoise*(4*M_PI*std::pow(Dc, 4))/(Pi*Gc*eprc*std::pow(Dp, 2))*std::pow(Apom, 2)*dekl/delFp*gammaPNoise*std::pow(10, 0.1*alpha*(2*Dc-Dp));
 }
+
+
+double CalculatorWidget::P_c_self_defense(double Dp)
+{
+    return Pi*Gc/(4*M_PI*std::pow(Dp, 2))*eprc/(4*M_PI*std::pow(Dp, 2))*Gc*std::pow(lambdaRls, 2)/(4*M_PI)*std::pow(10, -0.2*alpha*Dp);
+}
+
+double CalculatorWidget::P_p_imp_self_defense(double Dp, double Spp)
+{
+    return P_pp_imp(Spp)*GpNoise/(4*M_PI*std::pow(Dp, 2))*Gc*std::pow(lambdaRls, 2)/(4*M_PI)*gammaPNoise*std::pow(10, -0.1*alpha*Dp);
+}
+
+double CalculatorWidget::P_p_lchm_self_defense(double Dp, double Spp)
+{
+    return P_pp_lchm(Spp)*GpNoise/(4*M_PI*std::pow(Dp, 2))*Gc*std::pow(lambdaRls, 2)/(4*M_PI)*gammaPNoise*std::pow(10, -0.1*alpha*Dp);
+}
+
+double CalculatorWidget::P_p_fkm_self_defense(double Dp, double Spp)
+{
+    return P_pp_fkm(Spp)*GpNoise/(4*M_PI*std::pow(Dp, 2))*Gc*std::pow(lambdaRls, 2)/(4*M_PI)*gammaPNoise*std::pow(10, -0.1*alpha*Dp);
+}
+
+double CalculatorWidget::q_imp_self_defense(double Dp, double Spp)
+{
+    return P_c_self_defense(Dp)/(Psh+P_p_imp_self_defense(Dp, Spp))*2*Tc_imp*delfpri;
+}
+
+double CalculatorWidget::q_lchm_self_defense(double Dp, double Spp)
+{
+    return P_c_self_defense(Dp)/(Psh+P_p_lchm_self_defense(Dp, Spp))*2*Tc_lchm*delfprlcm;
+}
+
+double CalculatorWidget::q_fkm_self_defense(double Dp, double Spp)
+{
+    return P_c_self_defense(Dp)/(Psh+P_p_fkm_self_defense(Dp, Spp))*2*Tc_fkm*dekl;
+}
+
+double CalculatorWidget::D_imp_self_defense(double Dp, double Spp)
+{
+    return std::pow(Fc, 1/(1+q_imp_self_defense(Dp, Spp)/2));
+}
+
+double CalculatorWidget::D_lchm_self_defense(double Dp, double Spp)
+{
+    return std::pow(Fc, 1/(1+q_lchm_self_defense(Dp, Spp)/2));
+}
+
+double CalculatorWidget::D_fkm_self_defense(double Dp, double Spp)
+{
+    return std::pow(Fc, 1/(1+q_fkm_self_defense(Dp, Spp)/2));
+}
