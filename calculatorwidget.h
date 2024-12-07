@@ -91,6 +91,10 @@ private:
     double q_fkm(double Dc, double Dp, double Spp);
     double D_fkm(double Dc, double Dp, double Spp);
 
+    double k_imp_eff_act_noise(double Dc, double Dp, double Spp);
+    double k_lchm_eff_act_noise(double Dc, double Dp, double Spp);
+    double k_fkm_eff_act_noise(double Dc, double Dp, double Spp);
+
     QVBoxLayout* layout;
     QVBoxLayout* scrollLayout;
     QScrollArea* scrollArea;
@@ -101,6 +105,9 @@ private:
     QwtPlot* graph_1_plot;
     QwtPlot* graph_2_plot;
     QwtPlot* graph_3_plot;
+    QwtPlot* graph_4_plot;
+    QwtPlot* graph_5_plot;
+    QwtPlot* graph_6_plot;
 
     // Параметры РЛС
     double Pi;      //Импульсная мощность РЛС                        0
@@ -116,8 +123,8 @@ private:
     double Fpsig;   //Частота повторения                             9
     double Tpsig;   //Период повторения                              10
     double Tk;      //Время контакта с целью                         11
-    double tcimp;   //Длительность импульсного сигнала               12
-    double tclcm;   //Длительность ЛЧМ сигнала                       13
+    double tc_imp;   //Длительность импульсного сигнала               12
+    double tc_lchm;   //Длительность ЛЧМ сигнала                       13
     double W;       //Девиация                                       14
     double tkv;     //Длительность ФМ кванта                         15
     double Q;       //Скважность                                     16
@@ -165,6 +172,14 @@ private:
     double Tc_lchm;
     double tc_fkm;
     double Tc_fkm;
+
+    double B_imp;
+    double B_lchm;
+    double B_fkm;
+
+    double K_p_imp;
+    double K_p_lchm;
+    double K_p_fkm;
 };
 
 #endif // CALCULATORWIDGET_H

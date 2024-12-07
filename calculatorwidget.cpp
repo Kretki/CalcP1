@@ -63,6 +63,51 @@ CalculatorWidget::CalculatorWidget(std::array<double, 36>* vars, QWidget *parent
     grid_3->attach( graph_3_plot );
 
     scrollLayout->addWidget(graph_3_plot);
+
+    graph_4_plot = new QwtPlot(this);
+    graph_4_plot->setTitle( "Зависимость зоны подавления РЛС от дальности до цели" );
+    graph_4_plot->setCanvasBackground( Qt::white );
+    graph_4_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициент эффективности помехи" );
+    graph_4_plot->setAxisTitle( QwtPlot::xBottom, "Дальность цели, м" );
+    graph_4_plot->setAxisScale( QwtPlot::yLeft, 0, 4*std::pow(10, 6), std::pow(10, 6) );
+    graph_4_plot->setAxisScale( QwtPlot::xBottom, 0.0, std::pow(10, 5), 2*std::pow(10, 4) );
+    graph_4_plot->insertLegend( new QwtLegend() );
+
+
+    QwtPlotGrid* grid_4 = new QwtPlotGrid();
+    grid_4->attach( graph_4_plot );
+
+    scrollLayout->addWidget(graph_4_plot);
+
+    graph_5_plot = new QwtPlot(this);
+    graph_5_plot->setTitle( "Зависимость зоны подавления РЛС от дальности помехи" );
+    graph_5_plot->setCanvasBackground( Qt::white );
+    graph_5_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициент эффективности помехи" );
+    graph_5_plot->setAxisTitle( QwtPlot::xBottom, "Дальность помехи, м" );
+    graph_5_plot->setAxisScale( QwtPlot::yLeft, 0, 6*std::pow(10, 8), 2*std::pow(10, 8) );
+    graph_5_plot->setAxisScale( QwtPlot::xBottom, 0.0, 4*std::pow(10, 4), 1*std::pow(10, 4) );
+    graph_5_plot->insertLegend( new QwtLegend() );
+
+
+    QwtPlotGrid* grid_5 = new QwtPlotGrid();
+    grid_5->attach( graph_5_plot );
+
+    scrollLayout->addWidget(graph_5_plot);
+
+    graph_6_plot = new QwtPlot(this);
+    graph_6_plot->setTitle( "Зависимость зоны подавления РЛС от спектральной плотности помехи" );
+    graph_6_plot->setCanvasBackground( Qt::white );
+    graph_6_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициент эффективности помехи" );
+    graph_6_plot->setAxisTitle( QwtPlot::xBottom, "Спектральная плотность помехи, Вт/Гц" );
+    graph_6_plot->setAxisScale( QwtPlot::yLeft, 0, 5*std::pow(10, 7), std::pow(10, 7) );
+    graph_6_plot->setAxisScale( QwtPlot::xBottom, 0.0, std::pow(10, -4), 2*std::pow(10, -5) );
+    graph_6_plot->insertLegend( new QwtLegend() );
+
+
+    QwtPlotGrid* grid_6 = new QwtPlotGrid();
+    grid_6->attach( graph_6_plot );
+
+    scrollLayout->addWidget(graph_6_plot);
 }
 
 CalculatorWidget::~CalculatorWidget()
@@ -87,8 +132,8 @@ void CalculatorWidget::calculate()
     Fpsig = vars->at(9);   //Частота повторения                             9
     Tpsig = vars->at(10);   //Период повторения                              10
     Tk = vars->at(11);      //Время контакта с целью                         11
-    tcimp = vars->at(12);   //Длительность импульсного сигнала               12
-    tclcm = vars->at(13);   //Длительность ЛЧМ сигнала                       13
+    tc_imp = vars->at(12);   //Длительность импульсного сигнала               12
+    tc_lchm = vars->at(13);   //Длительность ЛЧМ сигнала                       13
     W = vars->at(14);       //Девиация                                       14
     tkv = vars->at(15);     //Длительность ФМ кванта                         15
     Q = vars->at(16);       //Скважность                                     16
@@ -117,7 +162,7 @@ void CalculatorWidget::calculate()
     //Длина волны РЛС
     lambdaRls = c/fc;
     // Ширина ПП приемника подавляемой РЛС
-    delfpri = 1/tcimp; // Импульсный сигнал    
+    delfpri = 1/tc_imp; // Импульсный сигнал    
     delfprlcm = W; //ЛЧМ сигнал
     dekl = 1/tkv; //ФКМ сигнал
     //delfpr < delFp для всех типов зондирующих сигналов => 
@@ -133,9 +178,9 @@ void CalculatorWidget::calculate()
     //Так как Tn<Tk
     Tn = Tk;
     N = Tn/Tpsig; //Число импульсов в пачке
-    Tc_imp = tcimp*N;
+    Tc_imp = tc_imp*N;
 
-    Tc_lchm = tclcm*N;;
+    Tc_lchm = tc_lchm*N;;
 
     tc_fkm = Tpsig/Q;
     Tc_fkm = tc_fkm*N;
@@ -248,9 +293,123 @@ void CalculatorWidget::calculate()
 
     curve_fkm_3->setSamples(points_fkm);
     curve_fkm_3->attach(graph_3_plot);
-}
 
-// double CalculatorWidget::Pc(double Dc)
-// {
-//     return 
-// }
+    //Базы сигналов
+    B_imp = delfpri*tc_imp;
+    B_lchm = delfpri*tc_lchm;
+    B_fkm = delfpri*tc_fkm;
+
+    K_p_imp = N*B_imp/(log10(1/Fc)/log10(1/Dpor)-1);
+    K_p_lchm = N*B_lchm/(log10(1/Fc)/log10(1/Dpor)-1);
+    K_p_fkm = N*B_fkm/(log10(1/Fc)/log10(1/Dpor)-1);
+    
+    //Рисуем зависимость коэффициента эффективности помехи от дальности цели
+    points_imp.clear();
+    points_lchm.clear();
+    points_fkm.clear();
+
+    QwtPlotCurve* curve_imp_4 = new QwtPlotCurve();
+    curve_imp_4->setTitle( "Импульсный сигнал" );
+    curve_imp_4->setPen( QPen( Qt::blue, 4 ) ),
+    curve_imp_4->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_lchm_4 = new QwtPlotCurve();
+    curve_lchm_4->setTitle( "ЛЧМ сигнал" );
+    curve_lchm_4->setPen( QPen( Qt::green, 4 ) ),
+    curve_lchm_4->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_fkm_4 = new QwtPlotCurve();
+    curve_fkm_4->setTitle( "ФКМ сигнал" );
+    curve_fkm_4->setPen( QPen( Qt::red, 4 ) ),
+    curve_fkm_4->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    for(int i = 0; i<std::pow(10, 5); i+=std::pow(10, 3))
+    {
+        points_imp << QPointF(i, this->k_imp_eff_act_noise(i, DpBase, SppBase));
+        points_lchm << QPointF(i, this->k_lchm_eff_act_noise(i, DpBase, SppBase));
+        points_fkm << QPointF(i, this->k_fkm_eff_act_noise(i, DpBase, SppBase));
+    }
+
+    curve_imp_4->setSamples(points_imp);
+    curve_imp_4->attach(graph_4_plot);
+
+    curve_lchm_4->setSamples(points_lchm);
+    curve_lchm_4->attach(graph_4_plot);
+
+    curve_fkm_4->setSamples(points_fkm);
+    curve_fkm_4->attach(graph_4_plot);
+
+    //Рисуем зависимость коэффициента эффективности помехи от дальности помехи
+    points_imp.clear();
+    points_lchm.clear();
+    points_fkm.clear();
+
+    QwtPlotCurve* curve_imp_5 = new QwtPlotCurve();
+    curve_imp_5->setTitle( "Импульсный сигнал" );
+    curve_imp_5->setPen( QPen( Qt::blue, 4 ) ),
+    curve_imp_5->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_lchm_5 = new QwtPlotCurve();
+    curve_lchm_5->setTitle( "ЛЧМ сигнал" );
+    curve_lchm_5->setPen( QPen( Qt::green, 4 ) ),
+    curve_lchm_5->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_fkm_5 = new QwtPlotCurve();
+    curve_fkm_5->setTitle( "ФКМ сигнал" );
+    curve_fkm_5->setPen( QPen( Qt::red, 4 ) ),
+    curve_fkm_5->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    for(int i = 0; i<4*std::pow(10, 4); i+=5*std::pow(10, 2))
+    {
+        qDebug() << i << " " << this->k_imp_eff_act_noise(50000, i, SppBase);
+        points_imp << QPointF(i, this->k_imp_eff_act_noise(50000, i, SppBase));
+        points_lchm << QPointF(i, this->k_lchm_eff_act_noise(50000, i, SppBase));
+        points_fkm << QPointF(i, this->k_fkm_eff_act_noise(50000, i, SppBase));
+    }
+
+    curve_imp_5->setSamples(points_imp);
+    curve_imp_5->attach(graph_5_plot);
+
+    curve_lchm_5->setSamples(points_lchm);
+    curve_lchm_5->attach(graph_5_plot);
+
+    curve_fkm_5->setSamples(points_fkm);
+    curve_fkm_5->attach(graph_5_plot);
+
+    //Рисуем зависимость коэффициента эффективности помехи от спектральной плотности помехи
+    points_imp.clear();
+    points_lchm.clear();
+    points_fkm.clear();
+
+    QwtPlotCurve* curve_imp_6 = new QwtPlotCurve();
+    curve_imp_6->setTitle( "Импульсный сигнал" );
+    curve_imp_6->setPen( QPen( Qt::blue, 4 ) ),
+    curve_imp_6->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_lchm_6 = new QwtPlotCurve();
+    curve_lchm_6->setTitle( "ЛЧМ сигнал" );
+    curve_lchm_6->setPen( QPen( Qt::green, 4 ) ),
+    curve_lchm_6->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_fkm_6 = new QwtPlotCurve();
+    curve_fkm_6->setTitle( "ФКМ сигнал" );
+    curve_fkm_6->setPen( QPen( Qt::red, 4 ) ),
+    curve_fkm_6->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    for(double i = 0; i<std::pow(10, -4); i+=std::pow(10, -6))
+    {
+        points_imp << QPointF(i, this->k_imp_eff_act_noise(50000, DpBase, i));
+        points_lchm << QPointF(i, this->k_lchm_eff_act_noise(50000, DpBase, i));
+        points_fkm << QPointF(i, this->k_fkm_eff_act_noise(50000, DpBase, i));
+    }
+
+    curve_imp_6->setSamples(points_imp);
+    curve_imp_6->attach(graph_6_plot);
+
+    curve_lchm_6->setSamples(points_lchm);
+    curve_lchm_6->attach(graph_6_plot);
+
+    curve_fkm_6->setSamples(points_fkm);
+    curve_fkm_6->attach(graph_6_plot);
+
+}
