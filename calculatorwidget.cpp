@@ -6,61 +6,36 @@ CalculatorWidget::CalculatorWidget(std::array<double, 36>* vars, QWidget *parent
     layout = new QVBoxLayout(this);
     this->setLayout(layout);
 
+    scrollWidg = new QWidget(this);
+    scrollLayout = new QVBoxLayout(scrollWidg);
+    scrollWidg->setLayout(scrollLayout);
+    scrollWidg->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    scrollArea = new QScrollArea();
+    scrollArea->setWidget(scrollWidg);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    layout->addWidget(scrollArea, 1);
+
     this->vars = vars;
 
     plot = new QwtPlot(this);
-    plot->setTitle( "Импульсный сигнал" );
+    plot->setTitle( "Зависимость вероятности правильного обнаружения от дальности до цели" );
     plot->setCanvasBackground( Qt::white );
     plot->setAxisScale( QwtPlot::yLeft, 0.0, 1.0 );
-    plot->setAxisScale( QwtPlot::xBottom, 0.0, 5000.0, 1000.0 );
+    plot->setAxisScale( QwtPlot::xBottom, 0.0, 20000.0, 5000.0 );
     plot->insertLegend( new QwtLegend() );
 
     QwtPlotGrid *grid = new QwtPlotGrid();
     grid->attach( plot );
 
-    curve = new QwtPlotCurve();
-    // curve->setTitle( "Some Points" );
-    curve->setPen( QPen( Qt::blue, 4 ) ),
-    curve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-
-    QwtSymbol *symbol = new QwtSymbol( QwtSymbol::Ellipse,
-        QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 8, 8 ) );
-    curve->setSymbol( symbol );
-
-    layout->addWidget(plot);
+    scrollLayout->addWidget(plot);
 }
 
 CalculatorWidget::~CalculatorWidget()
 {
     delete layout;
     delete vars;
-}
-
-double CalculatorWidget::Pc(double Dc)
-{
-    //Мощность полезного сигнала
-    return Pi*Gc/(4*M_PI*std::pow(Dc, 2))*eprc/(4*M_PI*std::pow(Dc, 2))*Gc*std::pow(lambdaRls, 2)/(4*M_PI)*std::pow(10, -0.2*alpha*Dc);
-}
-
-double CalculatorWidget::Pppi(double Spp)
-{
-    //Мощность передатчика помех импульсного сигнала
-    return Spp*this->delFpei;
-}
-
-double CalculatorWidget::Ppi(double Dp, double Spp)
-{
-    return Pppi(Spp)*this->GpNoise/(4*M_PI*std::pow(Dp, 2))*Gc*std::pow(lambdaRls, 2)/(4*M_PI)*std::pow(Apom, 2)*gammaPNoise*std::pow(10, -0.1*alpha*Dp);
-}
-
-double CalculatorWidget::qi(double Dc, double Dp, double Spp)
-{
-    return Pc(Dc)/(this->Psh+Ppi(Dp, Spp))*2*Tc*delfpri;
-}
-
-double CalculatorWidget::Di(double Dc, double Dp, double Spp)
-{
-    return std::pow(Fc, 1/(1+qi(Dc, Dp, Spp)/2));
 }
 
 void CalculatorWidget::calculate()
@@ -125,17 +100,51 @@ void CalculatorWidget::calculate()
     //Так как Tn<Tk
     Tn = Tk;
     N = Tn/Tpsig; //Число импульсов в пачке
-    Tc = tcimp*N;
+    Tc_imp = tcimp*N;
 
-    QPolygonF points;
+    Tc_lchm = tclcm*N;;
 
-    for(int i = 0; i<5000; i+=100)
+    tc_fkm = Tpsig/Q;
+    Tc_fkm = tc_fkm*N;
+
+    //Рисуем зависимость вероятности правильного обнаружения от дальности до цели
+
+    QwtPlotCurve* curve_imp = new QwtPlotCurve();
+    curve_imp->setTitle( "Импульсный сигнал" );
+    curve_imp->setPen( QPen( Qt::blue, 4 ) ),
+    curve_imp->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_lchm = new QwtPlotCurve();
+    curve_lchm->setTitle( "ЛЧМ сигнал" );
+    curve_lchm->setPen( QPen( Qt::green, 4 ) ),
+    curve_lchm->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_fkm = new QwtPlotCurve();
+    curve_fkm->setTitle( "ФКМ сигнал" );
+    curve_fkm->setPen( QPen( Qt::red, 4 ) ),
+    curve_fkm->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    // QwtSymbol *symbol = new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 8, 8 ) );
+    // curve_imp->setSymbol( symbol );
+
+    QPolygonF points_imp;
+    QPolygonF points_lchm;
+    QPolygonF points_fkm;
+
+    for(int i = 0; i<20000; i+=100)
     {
-        qDebug() << this->Di(i, DpBase, SppBase);
-        points << QPointF(i, this->Di(i, DpBase, SppBase));
+        points_imp << QPointF(i, this->D_imp(i, DpBase, SppBase));
+        points_lchm << QPointF(i, this->D_lchm(i, DpBase, SppBase));
+        points_fkm << QPointF(i, this->D_fkm(i, DpBase, SppBase));
     }
-    curve->setSamples( points );
-    curve->attach( plot );
+    curve_imp->setSamples(points_imp);
+    curve_imp->attach(plot);
+
+    curve_lchm->setSamples(points_lchm);
+    curve_lchm->attach(plot);
+
+    curve_fkm->setSamples(points_fkm);
+    curve_fkm->attach(plot);
 }
 
 // double CalculatorWidget::Pc(double Dc)

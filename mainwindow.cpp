@@ -26,8 +26,11 @@ MainWindow::MainWindow(QWidget *parent)
     this->setCentralWidget(centralWidg);
 
     calc = new CalculatorWidget(vars, this);
-
+    calc->hide();
     connect(btnSubmit, &QPushButton::clicked, this, &MainWindow::startCalc);
+
+    //ДЛЯ ОТЛАДКИ
+    this->startCalc();
 }
 
 MainWindow::~MainWindow()
@@ -38,6 +41,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::startCalc()
 {
+    calc->show();
     calc->calculate();
     this->setCentralWidget(calc);
 }

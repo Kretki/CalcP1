@@ -55,6 +55,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QPen>
+#include <QScrollArea>
 
 #include <math.h>
 
@@ -74,18 +75,30 @@ public:
 public slots:
     void calculate();
 private:
-    double Pc(double Dc);
-    double Pppi(double Spp);
-    double Ppi(double Dp, double Spp);
-    double qi(double Dc, double Dp, double Spp);
-    double Di(double Dc, double Dp, double Spp);
+    double P_c(double Dc);
+    double P_pp_imp(double Spp);
+    double P_p_imp(double Dp, double Spp);
+    double q_imp(double Dc, double Dp, double Spp);
+    double D_imp(double Dc, double Dp, double Spp);
+    
+    double P_pp_lchm(double Spp);
+    double P_p_lchm(double Dp, double Spp);
+    double q_lchm(double Dc, double Dp, double Spp);
+    double D_lchm(double Dc, double Dp, double Spp);
+
+    double P_pp_fkm(double Spp);
+    double P_p_fkm(double Dp, double Spp);
+    double q_fkm(double Dc, double Dp, double Spp);
+    double D_fkm(double Dc, double Dp, double Spp);
 
     QVBoxLayout* layout;
+    QVBoxLayout* scrollLayout;
+    QScrollArea* scrollArea;
+    QWidget* scrollWidg;
 
     std::array<double, 36>* vars;
 
     QwtPlot* plot;
-    QwtPlotCurve* curve;
 
     // Параметры РЛС
     double Pi;      //Импульсная мощность РЛС                        0
@@ -146,7 +159,10 @@ private:
     double Psh;
     double Tn;
     double N;
-    double Tc;
+    double Tc_imp;
+    double Tc_lchm;
+    double tc_fkm;
+    double Tc_fkm;
 };
 
 #endif // CALCULATORWIDGET_H

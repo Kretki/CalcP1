@@ -165,6 +165,7 @@ void ShowWidgetBlock::valuesChanged()
             output->setText(QString::number(2*vars->at(6)/vars->at(8)) + " " + this->unit);
             vars->at(12) = 2*vars->at(6)/vars->at(8);
             vars->at(13) = 2*vars->at(6)/vars->at(8);
+            vars->at(15) = 2*vars->at(6)/vars->at(8);
         }
     }
 }
@@ -351,6 +352,13 @@ InputWidget::InputWidget(std::array<double, 36>* vars, QWidget *parent)
     scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     layout->addWidget(scrollArea, 1);
+
+    //ДЛЯ ОТЛАДКИ
+    this->readFromFile(rlsVec, "inputRLS.txt");
+    this->readFromFile(sVec, "inputSig.txt");
+    this->readFromFile(tVec, "inputTarg.txt");
+    this->readFromFile(nVec, "inputNoise.txt");
+    this->readFromFile(recVec, "inputReceiver.txt");
 }
 
 InputWidget::~InputWidget()
