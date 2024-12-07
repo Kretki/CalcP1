@@ -98,7 +98,9 @@ private:
 
     std::array<double, 36>* vars;
 
-    QwtPlot* plot;
+    QwtPlot* graph_1_plot;
+    QwtPlot* graph_2_plot;
+    QwtPlot* graph_3_plot;
 
     // Параметры РЛС
     double Pi;      //Импульсная мощность РЛС                        0

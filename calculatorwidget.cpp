@@ -19,17 +19,50 @@ CalculatorWidget::CalculatorWidget(std::array<double, 36>* vars, QWidget *parent
 
     this->vars = vars;
 
-    plot = new QwtPlot(this);
-    plot->setTitle( "Зависимость вероятности правильного обнаружения от дальности до цели" );
-    plot->setCanvasBackground( Qt::white );
-    plot->setAxisScale( QwtPlot::yLeft, 0.0, 1.0 );
-    plot->setAxisScale( QwtPlot::xBottom, 0.0, 20000.0, 5000.0 );
-    plot->insertLegend( new QwtLegend() );
+    graph_1_plot = new QwtPlot(this);
+    graph_1_plot->setTitle( "Зависимость вероятности правильного обнаружения от дальности до цели" );
+    graph_1_plot->setCanvasBackground( Qt::white );
+    graph_1_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
+    graph_1_plot->setAxisTitle( QwtPlot::xBottom, "Дальность до цели, м" );
+    graph_1_plot->setAxisScale( QwtPlot::yLeft, 0.0, 1.0 );
+    graph_1_plot->setAxisScale( QwtPlot::xBottom, 0.0, 20000.0, 5000.0 );
+    graph_1_plot->insertLegend( new QwtLegend() );
 
-    QwtPlotGrid *grid = new QwtPlotGrid();
-    grid->attach( plot );
 
-    scrollLayout->addWidget(plot);
+    QwtPlotGrid* grid_1 = new QwtPlotGrid();
+    grid_1->attach( graph_1_plot );
+
+    scrollLayout->addWidget(graph_1_plot);
+
+    graph_2_plot = new QwtPlot(this);
+    graph_2_plot->setTitle( "Зависимость вероятности правильного обнаружения от дальности до цели (режим прикрытие)" );
+    graph_2_plot->setCanvasBackground( Qt::white );
+    graph_2_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
+    graph_2_plot->setAxisTitle( QwtPlot::xBottom, "Дальность помехи, м" );
+    graph_2_plot->setAxisScale( QwtPlot::yLeft, 0.0001, 0.000101 );
+    graph_2_plot->setAxisScale( QwtPlot::xBottom, 0.0, 100000.0, 20000.0 );
+    graph_2_plot->insertLegend( new QwtLegend() );
+
+    
+    QwtPlotGrid* grid_2 = new QwtPlotGrid();
+    grid_2->attach( graph_2_plot );
+
+    scrollLayout->addWidget(graph_2_plot);
+
+    graph_3_plot = new QwtPlot(this);
+    graph_3_plot->setTitle( "Зависимость характеристики обнаружения то спекртральной плотности мощности помехи" );
+    graph_3_plot->setCanvasBackground( Qt::white );
+    graph_3_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
+    graph_3_plot->setAxisTitle( QwtPlot::xBottom, "Спектральная плотность мощности помехи, Вт/Гц" );
+    graph_3_plot->setAxisScale( QwtPlot::yLeft, 0.0001, 0.00010015 );
+    graph_3_plot->setAxisScale( QwtPlot::xBottom, 0.0, 0.0001, 0.00002 );
+    graph_3_plot->insertLegend( new QwtLegend() );
+
+
+    QwtPlotGrid* grid_3 = new QwtPlotGrid();
+    grid_3->attach( graph_3_plot );
+
+    scrollLayout->addWidget(graph_3_plot);
 }
 
 CalculatorWidget::~CalculatorWidget()
@@ -109,20 +142,20 @@ void CalculatorWidget::calculate()
 
     //Рисуем зависимость вероятности правильного обнаружения от дальности до цели
 
-    QwtPlotCurve* curve_imp = new QwtPlotCurve();
-    curve_imp->setTitle( "Импульсный сигнал" );
-    curve_imp->setPen( QPen( Qt::blue, 4 ) ),
-    curve_imp->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+    QwtPlotCurve* curve_imp_1 = new QwtPlotCurve();
+    curve_imp_1->setTitle( "Импульсный сигнал" );
+    curve_imp_1->setPen( QPen( Qt::blue, 4 ) ),
+    curve_imp_1->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
-    QwtPlotCurve* curve_lchm = new QwtPlotCurve();
-    curve_lchm->setTitle( "ЛЧМ сигнал" );
-    curve_lchm->setPen( QPen( Qt::green, 4 ) ),
-    curve_lchm->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+    QwtPlotCurve* curve_lchm_1 = new QwtPlotCurve();
+    curve_lchm_1->setTitle( "ЛЧМ сигнал" );
+    curve_lchm_1->setPen( QPen( Qt::green, 4 ) ),
+    curve_lchm_1->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
-    QwtPlotCurve* curve_fkm = new QwtPlotCurve();
-    curve_fkm->setTitle( "ФКМ сигнал" );
-    curve_fkm->setPen( QPen( Qt::red, 4 ) ),
-    curve_fkm->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+    QwtPlotCurve* curve_fkm_1 = new QwtPlotCurve();
+    curve_fkm_1->setTitle( "ФКМ сигнал" );
+    curve_fkm_1->setPen( QPen( Qt::red, 4 ) ),
+    curve_fkm_1->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
     // QwtSymbol *symbol = new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 8, 8 ) );
     // curve_imp->setSymbol( symbol );
@@ -137,14 +170,84 @@ void CalculatorWidget::calculate()
         points_lchm << QPointF(i, this->D_lchm(i, DpBase, SppBase));
         points_fkm << QPointF(i, this->D_fkm(i, DpBase, SppBase));
     }
-    curve_imp->setSamples(points_imp);
-    curve_imp->attach(plot);
+    curve_imp_1->setSamples(points_imp);
+    curve_imp_1->attach(graph_1_plot);
 
-    curve_lchm->setSamples(points_lchm);
-    curve_lchm->attach(plot);
+    curve_lchm_1->setSamples(points_lchm);
+    curve_lchm_1->attach(graph_1_plot);
 
-    curve_fkm->setSamples(points_fkm);
-    curve_fkm->attach(plot);
+    curve_fkm_1->setSamples(points_fkm);
+    curve_fkm_1->attach(graph_1_plot);
+
+    //Рисуем зависимость вероятности правильного обнаружения от дальности до цели (режим прикрытие)
+    points_imp.clear();
+    points_lchm.clear();
+    points_fkm.clear();
+
+    QwtPlotCurve* curve_imp_2 = new QwtPlotCurve();
+    curve_imp_2->setTitle( "Импульсный сигнал" );
+    curve_imp_2->setPen( QPen( Qt::blue, 4 ) ),
+    curve_imp_2->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_lchm_2 = new QwtPlotCurve();
+    curve_lchm_2->setTitle( "ЛЧМ сигнал" );
+    curve_lchm_2->setPen( QPen( Qt::green, 4 ) ),
+    curve_lchm_2->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_fkm_2 = new QwtPlotCurve();
+    curve_fkm_2->setTitle( "ФКМ сигнал" );
+    curve_fkm_2->setPen( QPen( Qt::red, 4 ) ),
+    curve_fkm_2->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    for(int i = 0; i<110000; i+=1000)
+    {
+        points_imp << QPointF(i, this->D_imp(50000, i, SppBase));
+        points_lchm << QPointF(i, this->D_lchm(50000, i, SppBase));
+        points_fkm << QPointF(i, this->D_fkm(50000, i, SppBase));
+    }
+    curve_imp_2->setSamples(points_imp);
+    curve_imp_2->attach(graph_2_plot);
+
+    curve_lchm_2->setSamples(points_lchm);
+    curve_lchm_2->attach(graph_2_plot);
+
+    curve_fkm_2->setSamples(points_fkm);
+    curve_fkm_2->attach(graph_2_plot);
+
+    //Рисуем зависимость характеристики обнаружения от спектральной плотности мощности помехи
+    points_imp.clear();
+    points_lchm.clear();
+    points_fkm.clear();
+
+    QwtPlotCurve* curve_imp_3 = new QwtPlotCurve();
+    curve_imp_3->setTitle( "Импульсный сигнал" );
+    curve_imp_3->setPen( QPen( Qt::blue, 4 ) ),
+    curve_imp_3->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_lchm_3 = new QwtPlotCurve();
+    curve_lchm_3->setTitle( "ЛЧМ сигнал" );
+    curve_lchm_3->setPen( QPen( Qt::green, 4 ) ),
+    curve_lchm_3->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_fkm_3 = new QwtPlotCurve();
+    curve_fkm_3->setTitle( "ФКМ сигнал" );
+    curve_fkm_3->setPen( QPen( Qt::red, 4 ) ),
+    curve_fkm_3->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    for(double i = 0; i<0.00011; i+=0.000001)
+    {
+        points_imp << QPointF(i, this->D_imp(50000, DpBase, i));
+        points_lchm << QPointF(i, this->D_lchm(50000, DpBase, i));
+        points_fkm << QPointF(i, this->D_fkm(50000, DpBase, i));
+    }
+    curve_imp_3->setSamples(points_imp);
+    curve_imp_3->attach(graph_3_plot);
+
+    curve_lchm_3->setSamples(points_lchm);
+    curve_lchm_3->attach(graph_3_plot);
+
+    curve_fkm_3->setSamples(points_fkm);
+    curve_fkm_3->attach(graph_3_plot);
 }
 
 // double CalculatorWidget::Pc(double Dc)
