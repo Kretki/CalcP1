@@ -66,6 +66,7 @@
 #include <qwt_plot_grid.h>
 #include <qwt_symbol.h>
 #include <qwt_plot_zoomer.h>
+#include <cmath>
 
 class QwtPlotZoom : public QwtPlot
 {
@@ -138,11 +139,70 @@ private:
     double D_lchm_self_defense(double Dp, double Spp);
     double D_fkm_self_defense(double Dp, double Spp);
 
+    double k_imp_eff_imp(double Dp, double Spp);
+    double k_imp_eff_lchm(double Dp, double Spp);
+    double k_imp_eff_fkm (double Dp, double Spp);
+
+    double P_c_min_imp();
+    double P_c_min_fkm();
+    double P_c_min_lchm();
+
+    double R_c_u(double Pi);
+    double R_c_fkm(double Pi);
+    double  R_c_lchm(double Pi);
+
+    double P_prm (double Pi, double Rp); //мощность сигнала на входе энергетического приемника
+
+    double P_sr_imp(double Pi, double Rp); //сред мощность полезного сигнала
+    double P_sr_fkm(double Pi, double Rp);
+    double P_sr_lchm(double Pi, double Rp);
+
+    double q_csh_imp(double Pi,  double Rp ) ;      //отношение сигнал - шум
+    double q_csh_fkm(double Pi,  double Rp ) ;
+    double q_csh_lchm(double Pi,  double Rp ) ;
+
+    double ar (double x); //обратная функция ошибок
+
+    double D_p_imp(double Pi,  double Rp ) ;
+    double D_p_fkm(double Pi,  double Rp ) ;
+    double D_p_lchm(double Pi,  double Rp ) ;
+
+    double q_0_out(); //отнош сигнал/шум для достижениие заданной вероятности прав обнаруж Do и ложной тревоги Fp в разведприемнике
+    double n_imp();
+    double n_fkm();
+    double n_lchm();
+
+    double k_imp();
+    double k_fkm();
+    double k_lchm();
+
+    double q_0_out_imp(); //отношение сигнал/шум на входе энергетического приемника
+    double q_0_out_fkm();
+    double q_0_out_lchm();
+
+    double P_p_min_imp(); //чувствительность энергетического разведприемника
+    double P_p_min_fkm();
+    double P_p_min_lchm();
+
+    double R_p_imp(double Pi);  //дальность обнаружения РЛС разведприемником
+    double R_p_fkm(double Pi);
+    double R_p_lchm(double Pi);
+
+    //коэффициент скрытности
+    //R_c_i(P) - дальность обнаружения цели РЛ станцией
+    //R_p_u (Pi) -дальность обнаружения РЛС разведприемником
+
+    double S_imp(double Pi);
+    double S_fkm(double Pi);
+    double S_lchm(double Pi);
+
+    double Q_fkm();       //Скважность  ФКМ сигнала
+    double Q_imp();   //Скважность импульсного сигнала
+    double Q_lchm();  //Скважность ЛЧМ
     QVBoxLayout* layout;
     QVBoxLayout* scrollLayout;
     QScrollArea* scrollArea;
     QWidget* scrollWidg;
-
     std::array<double, 36>* vars;
 
     QwtPlot* graph_1_plot;
@@ -170,10 +230,11 @@ private:
     double Tpsig;   //Период повторения                              10
     double Tk;      //Время контакта с целью                         11
     double tc_imp;   //Длительность импульсного сигнала               12
-    double tc_lchm;   //Длительность ЛЧМ сигнала                       13
+    double tc_lchm;   //Длительность ЛЧМ сигнала
+    double tc_fkm;    //Длительность ФКМ сигна
     double W;       //Девиация                                       14
     double tkv;     //Длительность ФМ кванта                         15
-    double Q;       //Скважность                                     16
+
     //Цель и трасса
     double eprc;    //ЭПР цели                                       17
     double DcBase;      //Дальность цели                                 18
@@ -201,7 +262,7 @@ private:
     
     double delfpri;
     double delfprlcm;
-    double dekl;
+    double delfprfkm;
     
     double delFpei;
     double delFpelcm;
@@ -213,11 +274,12 @@ private:
     double delfshi;
     double Psh;
     double Tn;
-    double N;
+    double N; //число импульсов в пачке (стр. 11)
     double Tc_imp;
     double Tc_lchm;
-    double tc_fkm;
     double Tc_fkm;
+
+
 
     double B_imp;
     double B_lchm;
@@ -226,6 +288,15 @@ private:
     double K_p_imp;
     double K_p_lchm;
     double K_p_fkm;
+    double q_min = 31.219; //минимальное отношение сигнал шум для РЛС
+
+    double P_psh = 5.651* pow(10, -14); // мощность собственных щшумов разведприёмника
+
+
+
+    double eta=3.142*pow (10, 4); // параметр временного накопления
+    double x=1-FpRec;
+
 };
 
 #endif // CALCULATORWIDGET_H
