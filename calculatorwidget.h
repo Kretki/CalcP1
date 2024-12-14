@@ -57,6 +57,8 @@
 #include <QPen>
 #include <QScrollArea>
 #include <QWheelEvent>
+#include <QLabel>
+#include <QFrame>
 
 #include <math.h>
 
@@ -94,14 +96,16 @@ public:
     CalculatorWidget(std::array<double, 36>* vars, QWidget *parent = nullptr);
     ~CalculatorWidget();
 public slots:
-    void calculate();
+    void combine_results();
 private:
     void receive_base_data();
-    void prob_true_discover_graphics();
-    void noise_eff_coefficient_graphics();
-    void self_defense_prob_true_discover_graphics();
-    void self_defense_noise_eff_coefficient_graphics();
-
+    void prob_true_discover_graphics(QVBoxLayout* wrapper_layout);
+    void noise_eff_coefficient_graphics(QVBoxLayout* wrapper_layout);
+    void self_defense_prob_true_discover_graphics(QVBoxLayout* wrapper_layout);
+    void self_defense_noise_eff_coefficient_graphics(QVBoxLayout* wrapper_layout);
+    void hide_evaluation_discovery_distance(QVBoxLayout* wrapper_layout);
+    void hide_evaluation_proba_discovery(QVBoxLayout* wrapper_layout);
+    void hide_evaluation_from_power(QVBoxLayout* wrapper_layout);
 
     double P_c(double Dc);
     double P_pp_imp(double Spp);
@@ -138,6 +142,10 @@ private:
     double D_lchm_self_defense(double Dp, double Spp);
     double D_fkm_self_defense(double Dp, double Spp);
 
+    double k_imp_eff_act_noise_self_defence(double Dp, double Spp);
+    double k_lchm_eff_act_noise_self_defence(double Dp, double Spp);
+    double k_fkm_eff_act_noise_self_defence(double Dp, double Spp);
+
     QVBoxLayout* layout;
     QVBoxLayout* scrollLayout;
     QScrollArea* scrollArea;
@@ -154,6 +162,8 @@ private:
     QwtPlot* graph_7_plot;
     QwtPlot* graph_8_plot;
     QwtPlot* graph_9_plot;
+    QwtPlot* graph_10_plot;
+    QwtPlot* graph_11_plot;
 
     // Параметры РЛС
     double Pi;      //Импульсная мощность РЛС                        0

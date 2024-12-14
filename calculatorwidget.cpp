@@ -163,7 +163,7 @@ void CalculatorWidget::receive_base_data()
     Tc_fkm = tc_fkm*N;
 }
 
-void CalculatorWidget::prob_true_discover_graphics()
+void CalculatorWidget::prob_true_discover_graphics(QVBoxLayout* wrapper_layout)
 {
     graph_1_plot = new QwtPlotZoom(this, nullptr, nullptr, nullptr, nullptr, new double(20000.0), new double(5000.0));
     // graph_1_plot = new QwtPlot(this);
@@ -179,7 +179,7 @@ void CalculatorWidget::prob_true_discover_graphics()
     QwtPlotGrid* grid_1 = new QwtPlotGrid();
     grid_1->attach( graph_1_plot );
 
-    scrollLayout->addWidget(graph_1_plot);
+    wrapper_layout->addWidget(graph_1_plot);
 
     // graph_2_plot = new QwtPlot(this);
     graph_2_plot = new QwtPlotZoom(this, new double(0.0001), new double(0.000101), nullptr, nullptr, new double(100000.0), new double(20000.0));
@@ -195,11 +195,11 @@ void CalculatorWidget::prob_true_discover_graphics()
     QwtPlotGrid* grid_2 = new QwtPlotGrid();
     grid_2->attach( graph_2_plot );
 
-    scrollLayout->addWidget(graph_2_plot);
+    wrapper_layout->addWidget(graph_2_plot);
 
     // graph_3_plot = new QwtPlot(this);
     graph_3_plot = new QwtPlotZoom(this, new double(std::pow(10, -4)), new double(1.05*std::pow(10, -4)), nullptr, nullptr, new double(std::pow(10, -4)), new double(2*std::pow(10, -5)));
-    graph_3_plot->setTitle( "Зависимость характеристики обнаружения то спекртральной плотности мощности помехи" );
+    graph_3_plot->setTitle( "Зависимость характеристики обнаружения от спекртральной плотности мощности помехи" );
     graph_3_plot->setCanvasBackground( Qt::white );
     graph_3_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
     graph_3_plot->setAxisTitle( QwtPlot::xBottom, "Спектральная плотность мощности помехи, Вт/Гц" );
@@ -211,7 +211,7 @@ void CalculatorWidget::prob_true_discover_graphics()
     QwtPlotGrid* grid_3 = new QwtPlotGrid();
     grid_3->attach( graph_3_plot );
 
-    scrollLayout->addWidget(graph_3_plot);
+    wrapper_layout->addWidget(graph_3_plot);
 
 
     //Рисуем зависимость вероятности правильного обнаружения от дальности до цели
@@ -323,7 +323,7 @@ void CalculatorWidget::prob_true_discover_graphics()
     curve_fkm_3->attach(graph_3_plot);
 }
 
-void CalculatorWidget::noise_eff_coefficient_graphics()
+void CalculatorWidget::noise_eff_coefficient_graphics(QVBoxLayout* wrapper_layout)
 {
     // graph_4_plot = new QwtPlot(this);
     graph_4_plot = new QwtPlotZoom(this, nullptr, new double(4*std::pow(10, 6)), nullptr, nullptr, new double(std::pow(10, 5)), new double(2*std::pow(10, 4)));
@@ -339,7 +339,7 @@ void CalculatorWidget::noise_eff_coefficient_graphics()
     QwtPlotGrid* grid_4 = new QwtPlotGrid();
     grid_4->attach( graph_4_plot );
 
-    scrollLayout->addWidget(graph_4_plot);
+    wrapper_layout->addWidget(graph_4_plot);
 
     // graph_5_plot = new QwtPlot(this);
     graph_5_plot = new QwtPlotZoom(this, nullptr, new double(6*std::pow(10, 8)), nullptr, nullptr, new double(4*std::pow(10, 4)), new double(std::pow(10, 4)));
@@ -355,7 +355,7 @@ void CalculatorWidget::noise_eff_coefficient_graphics()
     QwtPlotGrid* grid_5 = new QwtPlotGrid();
     grid_5->attach( graph_5_plot );
 
-    scrollLayout->addWidget(graph_5_plot);
+    wrapper_layout->addWidget(graph_5_plot);
 
     // graph_6_plot = new QwtPlot(this);
     graph_6_plot = new QwtPlotZoom(this, nullptr, new double(5*std::pow(10, 7)), nullptr, nullptr, new double(std::pow(10, -4)), new double(2*std::pow(10, -5)));
@@ -371,7 +371,7 @@ void CalculatorWidget::noise_eff_coefficient_graphics()
     QwtPlotGrid* grid_6 = new QwtPlotGrid();
     grid_6->attach( graph_6_plot );
 
-    scrollLayout->addWidget(graph_6_plot);
+    wrapper_layout->addWidget(graph_6_plot);
 
 
     //Базы сигналов
@@ -492,7 +492,7 @@ void CalculatorWidget::noise_eff_coefficient_graphics()
     curve_fkm_6->attach(graph_6_plot);
 }
 
-void CalculatorWidget::self_defense_prob_true_discover_graphics()
+void CalculatorWidget::self_defense_prob_true_discover_graphics(QVBoxLayout* wrapper_layout)
 {
     //Рисуем зависимость вероятности правильного обнаружения цели от дальности цели и помехи
     // graph_7_plot = new QwtPlot(this);
@@ -509,7 +509,7 @@ void CalculatorWidget::self_defense_prob_true_discover_graphics()
     QwtPlotGrid* grid_7 = new QwtPlotGrid();
     grid_7->attach( graph_7_plot );
 
-    scrollLayout->addWidget(graph_7_plot);
+    wrapper_layout->addWidget(graph_7_plot);
 
 
     QPolygonF points_imp;
@@ -562,7 +562,7 @@ void CalculatorWidget::self_defense_prob_true_discover_graphics()
     QwtPlotGrid* grid_8 = new QwtPlotGrid();
     grid_8->attach( graph_8_plot );
 
-    scrollLayout->addWidget(graph_8_plot);
+    wrapper_layout->addWidget(graph_8_plot);
 
 
     points_imp.clear();
@@ -601,15 +601,208 @@ void CalculatorWidget::self_defense_prob_true_discover_graphics()
     curve_fkm_8->attach(graph_8_plot);
 }
 
-void CalculatorWidget::self_defense_noise_eff_coefficient_graphics()
+void CalculatorWidget::self_defense_noise_eff_coefficient_graphics(QVBoxLayout* wrapper_layout)
+{
+    graph_10_plot = new QwtPlotZoom(this, nullptr, new double(1.5*std::pow(10, 5)), nullptr, nullptr, new double(4*std::pow(10, 4)), nullptr);
+    graph_10_plot->setTitle( "Зависимость зоны подавления РЛС от дальности помехи" );
+    graph_10_plot->setCanvasBackground( Qt::white );
+    graph_10_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициенты эффективности помехи" );
+    graph_10_plot->setAxisTitle( QwtPlot::xBottom, "Дальность помехи, м" );
+    graph_10_plot->insertLegend( new QwtLegend() );
+
+
+    QwtPlotGrid* grid_10 = new QwtPlotGrid();
+    grid_10->attach( graph_10_plot );
+
+    wrapper_layout->addWidget(graph_10_plot);
+
+
+    QPolygonF points_imp;
+    QPolygonF points_lchm;
+    QPolygonF points_fkm;
+
+    QwtPlotCurve* curve_imp_10 = new QwtPlotCurve();
+    curve_imp_10->setTitle( "Импульсный сигнал" );
+    curve_imp_10->setPen( QPen( Qt::blue, 4 ) ),
+    curve_imp_10->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_lchm_10 = new QwtPlotCurve();
+    curve_lchm_10->setTitle( "ЛЧМ сигнал" );
+    curve_lchm_10->setPen( QPen( Qt::green, 4 ) ),
+    curve_lchm_10->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_fkm_10 = new QwtPlotCurve();
+    curve_fkm_10->setTitle( "ФКМ сигнал" );
+    curve_fkm_10->setPen( QPen( Qt::red, 4 ) ),
+    curve_fkm_10->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    for(int i = 0; i<4*std::pow(10, 4); i+=std::pow(10, 2))
+    {
+        points_imp << QPointF(i, this->k_imp_eff_act_noise_self_defence(i, SppBase));
+        points_lchm << QPointF(i, this->k_lchm_eff_act_noise_self_defence(i, SppBase));
+        points_fkm << QPointF(i, this->k_fkm_eff_act_noise_self_defence(i, SppBase));
+    }
+
+    curve_imp_10->setSamples(points_imp);
+    curve_imp_10->attach(graph_10_plot);
+
+    curve_lchm_10->setSamples(points_lchm);
+    curve_lchm_10->attach(graph_10_plot);
+
+    curve_fkm_10->setSamples(points_fkm);
+    curve_fkm_10->attach(graph_10_plot);
+
+
+    graph_11_plot = new QwtPlotZoom(this, nullptr, new double(6*std::pow(10, 7)), nullptr, nullptr, new double(std::pow(10, -4)), nullptr);
+    graph_11_plot->setTitle( "Зависимость зоны подавления РЛС от спектральной плотности помехи" );
+    graph_11_plot->setCanvasBackground( Qt::white );
+    graph_11_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициенты эффективности помехи" );
+    graph_11_plot->setAxisTitle( QwtPlot::xBottom, "Спектральная плотность мощности помехи, Вт/Гц" );
+    graph_11_plot->insertLegend( new QwtLegend() );
+
+
+    QwtPlotGrid* grid_11 = new QwtPlotGrid();
+    grid_11->attach( graph_11_plot );
+
+    wrapper_layout->addWidget(graph_11_plot);
+
+
+    points_imp.clear();
+    points_lchm.clear();
+    points_fkm.clear();
+
+    QwtPlotCurve* curve_imp_11 = new QwtPlotCurve();
+    curve_imp_11->setTitle( "Импульсный сигнал" );
+    curve_imp_11->setPen( QPen( Qt::blue, 4 ) ),
+    curve_imp_11->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_lchm_11 = new QwtPlotCurve();
+    curve_lchm_11->setTitle( "ЛЧМ сигнал" );
+    curve_lchm_11->setPen( QPen( Qt::green, 4 ) ),
+    curve_lchm_11->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    QwtPlotCurve* curve_fkm_11 = new QwtPlotCurve();
+    curve_fkm_11->setTitle( "ФКМ сигнал" );
+    curve_fkm_11->setPen( QPen( Qt::red, 4 ) ),
+    curve_fkm_11->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    for(double i = 0; i<std::pow(10, -4); i+=std::pow(10, -6))
+    {
+        points_imp << QPointF(i, this->k_imp_eff_act_noise_self_defence(DpBase, i));
+        points_lchm << QPointF(i, this->k_lchm_eff_act_noise_self_defence(DpBase, i));
+        points_fkm << QPointF(i, this->k_fkm_eff_act_noise_self_defence(DpBase, i));
+    }
+
+    curve_imp_11->setSamples(points_imp);
+    curve_imp_11->attach(graph_11_plot);
+
+    curve_lchm_11->setSamples(points_lchm);
+    curve_lchm_11->attach(graph_11_plot);
+
+    curve_fkm_11->setSamples(points_fkm);
+    curve_fkm_11->attach(graph_11_plot);
+}
+
+void hide_evaluation_discovery_distance(QVBoxLayout* wrapper_layout)
 {
 
 }
 
-void CalculatorWidget::calculate()
+void hide_evaluation_proba_discovery(QVBoxLayout* wrapper_layout)
+{
+
+}
+
+void hide_evaluation_from_power(QVBoxLayout* wrapper_layout)
+{
+    
+}
+
+void CalculatorWidget::combine_results()
 {
     this->receive_base_data();
-    this->prob_true_discover_graphics();
-    this->noise_eff_coefficient_graphics();
-    this->self_defense_prob_true_discover_graphics();
+    
+    QLabel* title_0 = new QLabel(this);
+    title_0->setStyleSheet("QLabel { font-size: 25px; font-weight: bold; }");
+    title_0->setText("Основные соотношения");
+    title_0->setAlignment(Qt::AlignCenter);
+    scrollLayout->addWidget(title_0);
+
+    QFrame* line_0 = new QFrame(this);
+    line_0->setFrameShape(QFrame::HLine);
+    scrollLayout->addWidget(line_0);
+
+    QWidget* wrapper_widget_0 = new QWidget(this);
+    QVBoxLayout* wrapper_layout_0 = new QVBoxLayout(wrapper_widget_0);
+    wrapper_widget_0->setLayout(wrapper_layout_0);
+
+    this->prob_true_discover_graphics(wrapper_layout_0);
+
+    scrollLayout->addWidget(wrapper_widget_0);
+
+    QFrame* line_1 = new QFrame(this);
+    line_1->setFrameShape(QFrame::HLine);
+    scrollLayout->addWidget(line_1);
+
+    QLabel* title_1 = new QLabel(this);
+    title_1->setStyleSheet("QLabel { font-size: 25px; font-weight: bold; }");
+    title_1->setText("Оценка помехоустойчивости");
+    title_1->setAlignment(Qt::AlignCenter);
+    scrollLayout->addWidget(title_1);
+
+    QFrame* line_2 = new QFrame(this);
+    line_2->setFrameShape(QFrame::HLine);
+    scrollLayout->addWidget(line_2);
+
+    QWidget* wrapper_widget_1 = new QWidget(this);
+    QVBoxLayout* wrapper_layout_1 = new QVBoxLayout(wrapper_widget_1);
+    wrapper_widget_1->setLayout(wrapper_layout_1);
+
+    this->noise_eff_coefficient_graphics(wrapper_layout_1);
+
+    scrollLayout->addWidget(wrapper_widget_1);
+
+    QFrame* line_3 = new QFrame(this);
+    line_3->setFrameShape(QFrame::HLine);
+    scrollLayout->addWidget(line_3);
+
+    QLabel* title_2 = new QLabel(this);
+    title_2->setStyleSheet("QLabel { font-size: 25px; font-weight: bold; }");
+    title_2->setText("Режим самозащита");
+    title_2->setAlignment(Qt::AlignCenter);
+    scrollLayout->addWidget(title_2);
+
+    QFrame* line_4 = new QFrame(this);
+    line_4->setFrameShape(QFrame::HLine);
+    scrollLayout->addWidget(line_4);
+
+    QWidget* wrapper_widget_2 = new QWidget(this);
+    QVBoxLayout* wrapper_layout_2 = new QVBoxLayout(wrapper_widget_2);
+    wrapper_widget_2->setLayout(wrapper_layout_2);
+
+    this->self_defense_prob_true_discover_graphics(wrapper_layout_2);
+
+    scrollLayout->addWidget(wrapper_widget_2);
+
+    QFrame* line_5 = new QFrame(this);
+    line_5->setFrameShape(QFrame::HLine);
+    scrollLayout->addWidget(line_5);
+
+    QLabel* title_3 = new QLabel(this);
+    title_3->setStyleSheet("QLabel { font-size: 25px; font-weight: bold; }");
+    title_3->setText("Оценка помехоустойчивости в режиме самозащиты");
+    title_3->setAlignment(Qt::AlignCenter);
+    scrollLayout->addWidget(title_3);
+
+    QFrame* line_6 = new QFrame(this);
+    line_6->setFrameShape(QFrame::HLine);
+    scrollLayout->addWidget(line_6);
+
+    QWidget* wrapper_widget_3 = new QWidget(this);
+    QVBoxLayout* wrapper_layout_3 = new QVBoxLayout(wrapper_widget_3);
+    wrapper_widget_3->setLayout(wrapper_layout_3);
+
+    this->self_defense_noise_eff_coefficient_graphics(wrapper_layout_3);
+
+    scrollLayout->addWidget(wrapper_widget_3);
 }

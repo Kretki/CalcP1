@@ -148,3 +148,21 @@ double CalculatorWidget::D_fkm_self_defense(double Dp, double Spp)
 {
     return std::pow(Fc, 1/(1+q_fkm_self_defense(Dp, Spp)/2));
 }
+
+double CalculatorWidget::k_imp_eff_act_noise_self_defence(double Dp, double Spp)
+{
+    //Коэффициент эффективности помехи импульсного сигнала (отношение мощности активной помехи к мощности сигнала на входе приемника РЛС)
+    return P_pp_imp(Spp)*this->GpNoise*(4*M_PI*std::pow(Dp, 2))/(Pi*Gc*eprc)*delfpri/delFp*gammaPNoise*std::pow(10, 0.1*alpha*Dp);
+}
+
+double CalculatorWidget::k_lchm_eff_act_noise_self_defence(double Dp, double Spp)
+{
+    //Коэффициент эффективности помехи ЛЧМ сигнала (отношение мощности активной помехи к мощности сигнала на входе приемника РЛС)
+    return P_pp_lchm(Spp)*this->GpNoise*(4*M_PI*std::pow(Dp, 2))/(Pi*Gc*eprc)*delfprlcm/delFp*gammaPNoise*std::pow(10, 0.1*alpha*Dp);
+}
+
+double CalculatorWidget::k_fkm_eff_act_noise_self_defence(double Dp, double Spp)
+{
+    //Коэффициент эффективности помехи ФКМ сигнала (отношение мощности активной помехи к мощности сигнала на входе приемника РЛС)
+    return P_pp_fkm(Spp)*this->GpNoise*(4*M_PI*std::pow(Dp, 2))/(Pi*Gc*eprc)*dekl/delFp*gammaPNoise*std::pow(10, 0.1*alpha*Dp);
+}
