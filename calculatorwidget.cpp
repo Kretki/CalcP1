@@ -605,7 +605,7 @@ void CalculatorWidget::self_defense_prob_true_discover_graphics(QVBoxLayout* wra
 
 void CalculatorWidget::self_defense_noise_eff_coefficient_graphics(QVBoxLayout* wrapper_layout)
 {
-    graph_10_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 5)), nullptr, nullptr, new double(4*std::pow(10, 4)), nullptr);
+    graph_10_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 5)), nullptr, nullptr, new double(10*std::pow(10, 4)), nullptr);
     graph_10_plot->setTitle( "Зависимость зоны подавления РЛС от дальности помехи" );
     graph_10_plot->setCanvasBackground( Qt::white );
     graph_10_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициенты эффективности помехи" );
@@ -638,7 +638,7 @@ void CalculatorWidget::self_defense_noise_eff_coefficient_graphics(QVBoxLayout* 
     curve_fkm_10->setPen( QPen( Qt::red, 4 ) ),
     curve_fkm_10->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
-    for(int i = 0; i<4*std::pow(10, 4); i+=std::pow(10, 2))
+    for(int i = 0; i<10*std::pow(10, 4); i+=2*std::pow(10, 4))
     {
         points_imp << QPointF(i, this->k_imp_eff_imp(i, SppBase));
         points_lchm << QPointF(i, this->k_imp_eff_lchm(i, SppBase));
@@ -688,7 +688,7 @@ void CalculatorWidget::self_defense_noise_eff_coefficient_graphics(QVBoxLayout* 
     curve_fkm_11->setPen( QPen( Qt::red, 4 ) ),
     curve_fkm_11->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
-    for(double i = 0; i<std::pow(10, -4); i+=std::pow(10, -6))
+    for(double i = 0; i<=std::pow(10, -4); i+=2*std::pow(10, -5))
     {
         points_imp << QPointF(i, this->k_imp_eff_imp(DpBase, i));
         points_lchm << QPointF(i, this->k_imp_eff_lchm(DpBase, i));
@@ -860,7 +860,7 @@ void CalculatorWidget::hide_evaluation_proba_discovery(QVBoxLayout* wrapper_layo
 
 void CalculatorWidget::hide_evaluation_from_power(QVBoxLayout* wrapper_layout)
 {
-    graph_15_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 5)), nullptr, nullptr, new double(2*std::pow(10, -1)), nullptr);
+    graph_15_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 6)), nullptr, nullptr, new double(2*std::pow(10, -1)), nullptr);
     graph_15_plot->setTitle( "Зависимость дальности обнаружения цели РЛ разведприемником от мощности РЛС" );
     graph_15_plot->setCanvasBackground( Qt::white );
     graph_15_plot->setAxisTitle( QwtPlot::yLeft, "Дальность обнаружения, м" );
@@ -909,7 +909,7 @@ void CalculatorWidget::hide_evaluation_from_power(QVBoxLayout* wrapper_layout)
     curve_fkm_15->setSamples(points_fkm);
     curve_fkm_15->attach(graph_15_plot);
 
-    graph_16_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 0)), nullptr, nullptr, new double(1*std::pow(10, -4)), nullptr);
+    graph_16_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, -2)), nullptr, nullptr, new double(2*std::pow(10, -1)), nullptr);
     graph_16_plot->setTitle( "Зависимость коэффициента скрытности от мощности РЛС" );
     graph_16_plot->setCanvasBackground( Qt::white );
     graph_16_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициент скрытности" );
@@ -921,7 +921,6 @@ void CalculatorWidget::hide_evaluation_from_power(QVBoxLayout* wrapper_layout)
     grid_16->attach( graph_16_plot );
 
     wrapper_layout->addWidget(graph_16_plot);
-
 
     points_imp.clear();
     points_lchm.clear();
@@ -942,11 +941,11 @@ void CalculatorWidget::hide_evaluation_from_power(QVBoxLayout* wrapper_layout)
     curve_fkm_16->setPen( QPen( Qt::red, 4 ) ),
     curve_fkm_16->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
-    for(double i = 0; i<std::pow(10, -4); i+=std::pow(10, -6))
+    for(double i = 0; i<2*std::pow(10, -1); i+=std::pow(10, -4))
     {
-        points_imp << QPointF(i, this->P_sr_imp(0.01, i));
-        points_lchm << QPointF(i, this->P_sr_lchm(0.01, i));
-        points_fkm << QPointF(i, this->P_sr_fkm(0.01, i));
+        points_imp << QPointF(i, this->S_imp(i));
+        points_lchm << QPointF(i, this->S_lchm(i));
+        points_fkm << QPointF(i, this->S_fkm(i));
     }
 
     curve_imp_16->setSamples(points_imp);
@@ -1109,7 +1108,7 @@ void CalculatorWidget::combine_results()
     QVBoxLayout* wrapper_layout_6 = new QVBoxLayout(wrapper_widget_6);
     wrapper_widget_6->setLayout(wrapper_layout_6);
 
-    this->hide_evaluation_proba_discovery(wrapper_layout_6);
+    this->hide_evaluation_from_power(wrapper_layout_6);
 
     scrollLayout->addWidget(wrapper_widget_6);
 }
