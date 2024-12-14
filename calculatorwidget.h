@@ -229,6 +229,8 @@ private:
     QwtPlot* graph_12_plot;
     QwtPlot* graph_13_plot;
     QwtPlot* graph_14_plot;
+    QwtPlot* graph_15_plot;
+    QwtPlot* graph_16_plot;
 
     // Параметры РЛС
     double Pi;      //Импульсная мощность РЛС                        0
