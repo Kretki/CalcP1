@@ -758,7 +758,7 @@ void CalculatorWidget::hide_evaluation_discovery_distance(QVBoxLayout* wrapper_l
 
 void CalculatorWidget::hide_evaluation_proba_discovery(QVBoxLayout* wrapper_layout)
 {
-    graph_13_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 0)), nullptr, nullptr, new double(1*std::pow(10, -1)), nullptr);
+    graph_13_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 0)), nullptr, nullptr, new double(8*std::pow(10, 1)), nullptr);
     graph_13_plot->setTitle( "Зависимость дальности обнаружения РЛС разведприемником от мощности сигнала РЛС" );
     graph_13_plot->setCanvasBackground( Qt::white );
     graph_13_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
@@ -790,11 +790,11 @@ void CalculatorWidget::hide_evaluation_proba_discovery(QVBoxLayout* wrapper_layo
     curve_fkm_13->setPen( QPen( Qt::red, 4 ) ),
     curve_fkm_13->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
-    for(double i = 0; i<std::pow(10, -1); i+=std::pow(10, -3))
+    for(double i = 0; i<8*std::pow(10, 1); i+=std::pow(10, -1))
     {
-        points_imp << QPointF(i, this->D_p_imp(i, std::pow(10, -4)));
-        points_lchm << QPointF(i, this->D_p_lchm(i, std::pow(10, -4)));
-        points_fkm << QPointF(i, this->D_p_fkm(i, std::pow(10, -4)));
+        points_imp << QPointF(i, this->D_p_imp(i, std::pow(10, 6)));
+        points_lchm << QPointF(i, this->D_p_lchm(i, std::pow(10, 6)));
+        points_fkm << QPointF(i, this->D_p_fkm(i, std::pow(10, 6)));
     }
 
     curve_imp_13->setSamples(points_imp);
@@ -806,7 +806,7 @@ void CalculatorWidget::hide_evaluation_proba_discovery(QVBoxLayout* wrapper_layo
     curve_fkm_13->setSamples(points_fkm);
     curve_fkm_13->attach(graph_13_plot);
 
-    graph_14_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 0)), nullptr, nullptr, new double(std::pow(10, 2)), nullptr);
+    graph_14_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 0)), nullptr, nullptr, new double(std::pow(10, 6)), nullptr);
     graph_14_plot->setTitle( "Зависимость вероятности правильного обнаружения РЛС разведприемником от дальности разведприемника" );
     graph_14_plot->setCanvasBackground( Qt::white );
     graph_14_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
@@ -838,7 +838,7 @@ void CalculatorWidget::hide_evaluation_proba_discovery(QVBoxLayout* wrapper_layo
     curve_fkm_14->setPen( QPen( Qt::red, 4 ) ),
     curve_fkm_14->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
-    for(double i = 0; i<std::pow(10, 2); i+=std::pow(10, -1))
+    for(double i = 0; i<std::pow(10, 6); i+=std::pow(10, 3))
     {
         points_imp << QPointF(i, this->D_p_imp(0.1, i));
         points_lchm << QPointF(i, this->D_p_lchm(0.1, i));
