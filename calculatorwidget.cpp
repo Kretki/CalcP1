@@ -605,7 +605,7 @@ void CalculatorWidget::self_defense_prob_true_discover_graphics(QVBoxLayout* wra
 
 void CalculatorWidget::self_defense_noise_eff_coefficient_graphics(QVBoxLayout* wrapper_layout)
 {
-    graph_10_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 5)), nullptr, nullptr, new double(10*std::pow(10, 4)), nullptr);
+    graph_10_plot = new QwtPlotZoom(this, nullptr, new double(1.5*std::pow(10, 6)), nullptr, nullptr, new double(10*std::pow(10, 4)), nullptr);
     graph_10_plot->setTitle( "Зависимость зоны подавления РЛС от дальности помехи" );
     graph_10_plot->setCanvasBackground( Qt::white );
     graph_10_plot->setAxisTitle( QwtPlot::yLeft, "Коэффициенты эффективности помехи" );
@@ -638,7 +638,7 @@ void CalculatorWidget::self_defense_noise_eff_coefficient_graphics(QVBoxLayout* 
     curve_fkm_10->setPen( QPen( Qt::red, 4 ) ),
     curve_fkm_10->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
-    for(int i = 0; i<10*std::pow(10, 4); i+=2*std::pow(10, 4))
+    for(int i = 0; i<10*std::pow(10, 4); i+=std::pow(10, 3))
     {
         points_imp << QPointF(i, this->k_imp_eff_imp(i, SppBase));
         points_lchm << QPointF(i, this->k_imp_eff_lchm(i, SppBase));
@@ -688,7 +688,7 @@ void CalculatorWidget::self_defense_noise_eff_coefficient_graphics(QVBoxLayout* 
     curve_fkm_11->setPen( QPen( Qt::red, 4 ) ),
     curve_fkm_11->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
-    for(double i = 0; i<=std::pow(10, -4); i+=2*std::pow(10, -5))
+    for(double i = 0; i<=std::pow(10, -4); i+=std::pow(10, -5))
     {
         points_imp << QPointF(i, this->k_imp_eff_imp(DpBase, i));
         points_lchm << QPointF(i, this->k_imp_eff_lchm(DpBase, i));
@@ -707,7 +707,7 @@ void CalculatorWidget::self_defense_noise_eff_coefficient_graphics(QVBoxLayout* 
 
 void CalculatorWidget::hide_evaluation_discovery_distance(QVBoxLayout* wrapper_layout)
 {
-    graph_12_plot = new QwtPlotZoom(this, nullptr, new double(8*std::pow(10, 3)), nullptr, nullptr, new double(1*std::pow(10, -2)), nullptr);
+    graph_12_plot = new QwtPlotZoom(this, nullptr, new double(8*std::pow(10, 3)), nullptr, nullptr, new double(1*std::pow(10, 2)), nullptr);
     graph_12_plot->setTitle( "Зависимость дальности обнаружения цели РЛ станцией от мощности РЛС" );
     graph_12_plot->setCanvasBackground( Qt::white );
     graph_12_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
@@ -719,7 +719,6 @@ void CalculatorWidget::hide_evaluation_discovery_distance(QVBoxLayout* wrapper_l
     grid_12->attach( graph_12_plot );
 
     wrapper_layout->addWidget(graph_12_plot);
-
 
     QPolygonF points_imp;
     QPolygonF points_lchm;
@@ -740,11 +739,11 @@ void CalculatorWidget::hide_evaluation_discovery_distance(QVBoxLayout* wrapper_l
     curve_fkm_12->setPen( QPen( Qt::red, 4 ) ),
     curve_fkm_12->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
-    for(double i = 0; i<std::pow(10, 2); i+=std::pow(10, 0))
+    for(double i = 0; i<1*std::pow(10, 2); i+=std::pow(10, -1))
     {
-        points_imp << QPointF(i, this->P_sr_imp(i, std::pow(10, -4)));
-        points_lchm << QPointF(i, this->P_sr_lchm(i, std::pow(10, -4)));
-        points_fkm << QPointF(i, this->P_sr_fkm(i, std::pow(10, -4)));
+        points_imp << QPointF(i, this->R_c_u(i));
+        points_lchm << QPointF(i, this->R_c_lchm(i));
+        points_fkm << QPointF(i, this->R_c_fkm(i));
     }
 
     curve_imp_12->setSamples(points_imp);
@@ -755,9 +754,12 @@ void CalculatorWidget::hide_evaluation_discovery_distance(QVBoxLayout* wrapper_l
 
     curve_fkm_12->setSamples(points_fkm);
     curve_fkm_12->attach(graph_12_plot);
+}
 
-    graph_13_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 0)), nullptr, nullptr, new double(1*std::pow(10, -4)), nullptr);
-    graph_13_plot->setTitle( "Зависимость дальности обнаружения РЛС разведприемником от дальности разведприемника" );
+void CalculatorWidget::hide_evaluation_proba_discovery(QVBoxLayout* wrapper_layout)
+{
+    graph_13_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 0)), nullptr, nullptr, new double(1*std::pow(10, -1)), nullptr);
+    graph_13_plot->setTitle( "Зависимость дальности обнаружения РЛС разведприемником от мощности сигнала РЛС" );
     graph_13_plot->setCanvasBackground( Qt::white );
     graph_13_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
     graph_13_plot->setAxisTitle( QwtPlot::xBottom, "Мощность сигнала РЛС, Вт" );
@@ -769,10 +771,9 @@ void CalculatorWidget::hide_evaluation_discovery_distance(QVBoxLayout* wrapper_l
 
     wrapper_layout->addWidget(graph_13_plot);
 
-
-    points_imp.clear();
-    points_lchm.clear();
-    points_fkm.clear();
+    QPolygonF points_imp;
+    QPolygonF points_lchm;
+    QPolygonF points_fkm;
 
     QwtPlotCurve* curve_imp_13 = new QwtPlotCurve();
     curve_imp_13->setTitle( "Импульсный сигнал" );
@@ -789,11 +790,11 @@ void CalculatorWidget::hide_evaluation_discovery_distance(QVBoxLayout* wrapper_l
     curve_fkm_13->setPen( QPen( Qt::red, 4 ) ),
     curve_fkm_13->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
-    for(double i = 0; i<std::pow(10, -4); i+=std::pow(10, -6))
+    for(double i = 0; i<std::pow(10, -1); i+=std::pow(10, -3))
     {
-        points_imp << QPointF(i, this->P_sr_imp(0.01, i));
-        points_lchm << QPointF(i, this->P_sr_lchm(0.01, i));
-        points_fkm << QPointF(i, this->P_sr_fkm(0.01, i));
+        points_imp << QPointF(i, this->D_p_imp(i, std::pow(10, -4)));
+        points_lchm << QPointF(i, this->D_p_lchm(i, std::pow(10, -4)));
+        points_fkm << QPointF(i, this->D_p_fkm(i, std::pow(10, -4)));
     }
 
     curve_imp_13->setSamples(points_imp);
@@ -804,15 +805,12 @@ void CalculatorWidget::hide_evaluation_discovery_distance(QVBoxLayout* wrapper_l
 
     curve_fkm_13->setSamples(points_fkm);
     curve_fkm_13->attach(graph_13_plot);
-}
 
-void CalculatorWidget::hide_evaluation_proba_discovery(QVBoxLayout* wrapper_layout)
-{
-    graph_14_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 0)), nullptr, nullptr, new double(5*std::pow(10, -2)), nullptr);
-    graph_14_plot->setTitle( "Зависимость вероятности правильного обнаружения цели от дальности цели и помехи" );
+    graph_14_plot = new QwtPlotZoom(this, nullptr, new double(2*std::pow(10, 0)), nullptr, nullptr, new double(std::pow(10, 2)), nullptr);
+    graph_14_plot->setTitle( "Зависимость вероятности правильного обнаружения РЛС разведприемником от дальности разведприемника" );
     graph_14_plot->setCanvasBackground( Qt::white );
     graph_14_plot->setAxisTitle( QwtPlot::yLeft, "Вероятность правильного обнаружения" );
-    graph_14_plot->setAxisTitle( QwtPlot::xBottom, "Мощность РЛС, Вт" );
+    graph_14_plot->setAxisTitle( QwtPlot::xBottom, "Дальность разведприемника, м" );
     graph_14_plot->insertLegend( new QwtLegend() );
 
 
@@ -821,10 +819,9 @@ void CalculatorWidget::hide_evaluation_proba_discovery(QVBoxLayout* wrapper_layo
 
     wrapper_layout->addWidget(graph_14_plot);
 
-
-    QPolygonF points_imp;
-    QPolygonF points_lchm;
-    QPolygonF points_fkm;
+    points_imp.clear();
+    points_lchm.clear();
+    points_fkm.clear();
 
     QwtPlotCurve* curve_imp_14 = new QwtPlotCurve();
     curve_imp_14->setTitle( "Импульсный сигнал" );
@@ -841,11 +838,11 @@ void CalculatorWidget::hide_evaluation_proba_discovery(QVBoxLayout* wrapper_layo
     curve_fkm_14->setPen( QPen( Qt::red, 4 ) ),
     curve_fkm_14->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
-    for(double i = 0; i<5*std::pow(10, -2); i+=std::pow(10, 4))
+    for(double i = 0; i<std::pow(10, 2); i+=std::pow(10, -1))
     {
-        points_imp << QPointF(i, this->D_p_imp(i, SppBase));
-        points_lchm << QPointF(i, this->D_p_lchm(i, SppBase));
-        points_fkm << QPointF(i, this->D_p_fkm(i, SppBase));
+        points_imp << QPointF(i, this->D_p_imp(0.1, i));
+        points_lchm << QPointF(i, this->D_p_lchm(0.1, i));
+        points_fkm << QPointF(i, this->D_p_fkm(0.1, i));
     }
 
     curve_imp_14->setSamples(points_imp);
