@@ -42,6 +42,6 @@ MainWindow::~MainWindow()
 void MainWindow::startCalc()
 {
     calc->show();
-    calc->calculate();
+    calc->combine_results();
     this->setCentralWidget(calc);
 }

@@ -71,7 +71,7 @@ double CalculatorWidget::P_p_fkm(double Dp, double Spp)
 double CalculatorWidget::q_fkm(double Dc, double Dp, double Spp)
 {
     //Отношение сигнал/шум для ЛЧМ сигнала
-    return P_c(Dc)/(this->Psh+P_p_fkm(Dp, Spp))*2*Tc_fkm*dekl;
+    return P_c(Dc)/(this->Psh+P_p_fkm(Dp, Spp))*2*Tc_fkm*delfprfkm;
 }
 
 double CalculatorWidget::D_fkm(double Dc, double Dp, double Spp)
@@ -95,7 +95,7 @@ double CalculatorWidget::k_lchm_eff_act_noise(double Dc, double Dp, double Spp)
 double CalculatorWidget::k_fkm_eff_act_noise(double Dc, double Dp, double Spp)
 {
     //Коэффициент эффективности помехи ФКМ сигнала (отношение мощности активной помехи к мощности сигнала на входе приемника РЛС)
-    return P_pp_fkm(Spp)*this->GpNoise*(4*M_PI*std::pow(Dc, 4))/(Pi*Gc*eprc*std::pow(Dp, 2))*std::pow(Apom, 2)*dekl/delFp*gammaPNoise*std::pow(10, 0.1*alpha*(2*Dc-Dp));
+    return P_pp_fkm(Spp)*this->GpNoise*(4*M_PI*std::pow(Dc, 4))/(Pi*Gc*eprc*std::pow(Dp, 2))*std::pow(Apom, 2)*delfprfkm/delFp*gammaPNoise*std::pow(10, 0.1*alpha*(2*Dc-Dp));
 }
 
 
@@ -131,7 +131,7 @@ double CalculatorWidget::q_lchm_self_defense(double Dp, double Spp)
 
 double CalculatorWidget::q_fkm_self_defense(double Dp, double Spp)
 {
-    return P_c_self_defense(Dp)/(Psh+P_p_fkm_self_defense(Dp, Spp))*2*Tc_fkm*dekl;
+    return P_c_self_defense(Dp)/(Psh+P_p_fkm_self_defense(Dp, Spp))*2*Tc_fkm*delfprfkm;
 }
 
 double CalculatorWidget::D_imp_self_defense(double Dp, double Spp)
@@ -148,6 +148,25 @@ double CalculatorWidget::D_fkm_self_defense(double Dp, double Spp)
 {
     return std::pow(Fc, 1/(1+q_fkm_self_defense(Dp, Spp)/2));
 }
+
+// double CalculatorWidget::k_imp_eff_act_noise_self_defence(double Dp, double Spp)
+// {
+//     //Коэффициент эффективности помехи импульсного сигнала (отношение мощности активной помехи к мощности сигнала на входе приемника РЛС)
+//     return P_pp_imp(Spp)*this->GpNoise*(4*M_PI*std::pow(Dp, 2))/(Pi*Gc*eprc)*delfpri/delFp*gammaPNoise*std::pow(10, 0.1*alpha*Dp);
+// }
+
+// double CalculatorWidget::k_lchm_eff_act_noise_self_defence(double Dp, double Spp)
+// {
+//     //Коэффициент эффективности помехи ЛЧМ сигнала (отношение мощности активной помехи к мощности сигнала на входе приемника РЛС)
+//     return P_pp_lchm(Spp)*this->GpNoise*(4*M_PI*std::pow(Dp, 2))/(Pi*Gc*eprc)*delfprlcm/delFp*gammaPNoise*std::pow(10, 0.1*alpha*Dp);
+// }
+
+// double CalculatorWidget::k_fkm_eff_act_noise_self_defence(double Dp, double Spp)
+// {
+//     //Коэффициент эффективности помехи ФКМ сигнала (отношение мощности активной помехи к мощности сигнала на входе приемника РЛС)
+//     return P_pp_fkm(Spp)*this->GpNoise*(4*M_PI*std::pow(Dp, 2))/(Pi*Gc*eprc)*delfprfkm/delFp*gammaPNoise*std::pow(10, 0.1*alpha*Dp);
+// }
+
 
 //коэффициент эффективности помех
 // 2.12 -2.13
@@ -201,8 +220,6 @@ double CalculatorWidget:: P_prm(double Pi, double Rp){
 
 
 
-
-
 double CalculatorWidget::  Q_fkm(){  //Скважность  ФКМ сигнала
     return Tpsig / tc_fkm;
 };
@@ -244,21 +261,23 @@ double CalculatorWidget:: ar (double x){
 //double erf_x = erf(x);
 
 double CalculatorWidget:: D_p_imp(double Pi,  double Rp ){
-    return (1 - erf(ar(x) - q_csh_imp(Pi, Rp) * pow(eta/2, 0.5) /(1+q_csh_imp(Pi, Rp)) ));
+
+    return (1 - 1/(pow(2*M_PI,0.5))*erf( (ar(x) - q_csh_imp(Pi, Rp) * pow(eta/2, 0.5)) /(1+q_csh_imp(Pi, Rp)) )) ;
 }
 
 double CalculatorWidget:: D_p_fkm(double Pi,  double Rp ){
-    return (1 - erf(ar(x) - q_csh_fkm(Pi, Rp) * pow(eta/2, 0.5) /(1+q_csh_fkm(Pi, Rp)) ));
+    std::cout <<(1 - erf( ( ar(x) - q_csh_fkm(Pi, Rp) * pow(eta/2, 0.5)) /(1+q_csh_fkm(Pi, Rp)) ) );
+    return (1 - 1/pow(2*M_PI,0.5)* erf( ( ar(x) - q_csh_fkm(Pi, Rp) * pow(eta/2, 0.5)) /(1+q_csh_fkm(Pi, Rp)) ) );
 }
 
 double CalculatorWidget:: D_p_lchm(double Pi,  double Rp ){
-    return (1 - erf(ar(x) - q_csh_lchm(Pi, Rp) * pow(eta/2, 0.5) /(1+q_csh_lchm(Pi, Rp)) ));
+    return (1 - 1/(pow(2*M_PI,0.5))* erf( ( ar(x) - q_csh_lchm(Pi, Rp) * pow(eta/2, 0.5)) /(1+q_csh_lchm(Pi, Rp)) ) );
 }
 
 
 //отнош сигнал/шум для достижениие заданной вероятности прав обнаруж Do и ложной тревоги Fp в разведприемнике
 double CalculatorWidget:: q_0_out(){
-    return ar(1-FpRec) - ar(1-Do) / (pow(eta/2,0.5) + ar (1-Do));
+    return (ar(1-FpRec) - ar(1-Do)) / (pow(eta/2,0.5) + ar (1-Do));
 }
 
 
@@ -307,25 +326,25 @@ double CalculatorWidget:: P_p_min_lchm(){
 }
 
 //дальность обнаружения РЛС разведприемником
-double CalculatorWidget:: R_p_imp(double Pi){
-   pow( (Pi*Gc*GpRec * pow(lambdaRls, 2) * gammaPRec * pow(Arp,2) ) /( pow( 4* M_PI, 2) * P_p_min_imp())  , 0.5) ;
+double CalculatorWidget:: R_p_imp(double P){
+   return pow( (P*Gc*GpRec * pow(lambdaRls, 2) * gammaPRec * pow(Arp,2) ) /( pow( 4* M_PI, 2) * P_p_min_imp())  , 0.5) ;
 }
 
-double CalculatorWidget:: R_p_fkm(double Pi){
-   pow( (Pi*Gc*GpRec * pow(lambdaRls, 2) * gammaPRec * pow(Arp,2) ) /( pow( 4* M_PI, 2) * P_p_min_fkm())  , 0.5) ; ;
+double CalculatorWidget:: R_p_fkm(double P){
+   return pow( (P*Gc*GpRec * pow(lambdaRls, 2) * gammaPRec * pow(Arp,2) ) /( pow( 4* M_PI, 2) * P_p_min_fkm())  , 0.5) ; ;
 }
-double CalculatorWidget::  R_p_lchm(double Pi){
-    pow( (Pi*Gc*GpRec * pow(lambdaRls, 2) * gammaPRec * pow(Arp,2) ) /( pow( 4* M_PI, 2) * P_p_min_lchm())  , 0.5) ;;
+double CalculatorWidget::  R_p_lchm(double P){
+    return pow( (P*Gc*GpRec * pow(lambdaRls, 2) * gammaPRec * pow(Arp,2) ) /( pow( 4* M_PI, 2) * P_p_min_lchm())  , 0.5) ;;
 }
 //коэффициент скрытности
 
-double  CalculatorWidget:: S_imp(double Pi){
-  return R_c_u(Pi)/R_p_imp(Pi);
+double  CalculatorWidget:: S_imp(double P){
+  return R_c_u(P)/R_p_imp(P);
 }
 
-double CalculatorWidget:: S_fkm(double Pi ){
-    return R_c_fkm(Pi)/R_p_fkm(Pi);
+double CalculatorWidget:: S_fkm(double P ){
+    return R_c_fkm(P)/R_p_fkm(P);
 }
-double CalculatorWidget::  S_lchm(double Pi){
-    return R_c_lchm(Pi)/R_p_lchm(Pi);
+double CalculatorWidget::  S_lchm(double P){
+    return R_c_lchm(P)/R_p_lchm(P);
 }

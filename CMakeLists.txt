@@ -11,10 +11,10 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt5 COMPONENTS Widgets Core REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Core Svg REQUIRED)
 
-set(QWT_ROOT /usr/local/qwt-6.3.0)
-set(QWT_INCLUDE_DIR ${QWT_ROOT}/include)
+set(QWT_ROOT /home/astra/Загрузки/qwt-6.3.0)
+set(QWT_INCLUDE_DIR ${QWT_ROOT}/src)
 set(QWT_LIBRARY_DIR ${QWT_ROOT}/lib)
 
 include_directories(${QWT_INCLUDE_DIR})
@@ -35,7 +35,7 @@ add_executable(CalcP
   calculatorwidgetfunctions.cpp
 )
 
-target_link_libraries(CalcP PRIVATE Qt5::Core Qt5::Widgets)
+target_link_libraries(CalcP PRIVATE Qt5::Core Qt5::Widgets Qt5::Svg)
 target_link_libraries(CalcP PRIVATE ${QWT_LIBRARIES})
 
 configure_file(inputRLS.txt ${CMAKE_BINARY_DIR}/inputRLS.txt COPYONLY)

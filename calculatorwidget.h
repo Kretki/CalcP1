@@ -48,7 +48,9 @@
     // double gammaPRec;//Расхождение поляризаций антенн РЛС и РП       35
 // };
 
+#include <math.h>
 #include <vector>
+#include <cmath>
 
 #include <QDebug>
 
@@ -57,16 +59,15 @@
 #include <QPen>
 #include <QScrollArea>
 #include <QWheelEvent>
-
-#include <math.h>
-
+#include <QLabel>
+#include <QFrame>
+#include <iostream>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_legend.h>
 #include <qwt_plot_grid.h>
 #include <qwt_symbol.h>
 #include <qwt_plot_zoomer.h>
-#include <cmath>
 
 class QwtPlotZoom : public QwtPlot
 {
@@ -95,14 +96,16 @@ public:
     CalculatorWidget(std::array<double, 36>* vars, QWidget *parent = nullptr);
     ~CalculatorWidget();
 public slots:
-    void calculate();
+    void combine_results();
 private:
     void receive_base_data();
-    void prob_true_discover_graphics();
-    void noise_eff_coefficient_graphics();
-    void self_defense_prob_true_discover_graphics();
-    void self_defense_noise_eff_coefficient_graphics();
-
+    void prob_true_discover_graphics(QVBoxLayout* wrapper_layout);
+    void noise_eff_coefficient_graphics(QVBoxLayout* wrapper_layout);
+    void self_defense_prob_true_discover_graphics(QVBoxLayout* wrapper_layout);
+    void self_defense_noise_eff_coefficient_graphics(QVBoxLayout* wrapper_layout);
+    void hide_evaluation_discovery_distance(QVBoxLayout* wrapper_layout);
+    void hide_evaluation_proba_discovery(QVBoxLayout* wrapper_layout);
+    void hide_evaluation_from_power(QVBoxLayout* wrapper_layout);
 
     double P_c(double Dc);
     double P_pp_imp(double Spp);
@@ -138,6 +141,10 @@ private:
     double D_imp_self_defense(double Dp, double Spp);
     double D_lchm_self_defense(double Dp, double Spp);
     double D_fkm_self_defense(double Dp, double Spp);
+
+    // double k_imp_eff_act_noise_self_defence(double Dp, double Spp);
+    // double k_lchm_eff_act_noise_self_defence(double Dp, double Spp);
+    // double k_fkm_eff_act_noise_self_defence(double Dp, double Spp);
 
     double k_imp_eff_imp(double Dp, double Spp);
     double k_imp_eff_lchm(double Dp, double Spp);
@@ -199,10 +206,13 @@ private:
     double Q_fkm();       //Скважность  ФКМ сигнала
     double Q_imp();   //Скважность импульсного сигнала
     double Q_lchm();  //Скважность ЛЧМ
+
+
     QVBoxLayout* layout;
     QVBoxLayout* scrollLayout;
     QScrollArea* scrollArea;
     QWidget* scrollWidg;
+
     std::array<double, 36>* vars;
 
     QwtPlot* graph_1_plot;
@@ -214,6 +224,13 @@ private:
     QwtPlot* graph_7_plot;
     QwtPlot* graph_8_plot;
     QwtPlot* graph_9_plot;
+    QwtPlot* graph_10_plot;
+    QwtPlot* graph_11_plot;
+    QwtPlot* graph_12_plot;
+    QwtPlot* graph_13_plot;
+    QwtPlot* graph_14_plot;
+    QwtPlot* graph_15_plot;
+    QwtPlot* graph_16_plot;
 
     // Параметры РЛС
     double Pi;      //Импульсная мощность РЛС                        0
@@ -230,11 +247,11 @@ private:
     double Tpsig;   //Период повторения                              10
     double Tk;      //Время контакта с целью                         11
     double tc_imp;   //Длительность импульсного сигнала               12
-    double tc_lchm;   //Длительность ЛЧМ сигнала
-    double tc_fkm;    //Длительность ФКМ сигна
+    double tc_lchm;   //Длительность ЛЧМ сигнала                       13
+    double tc_fkm;
     double W;       //Девиация                                       14
     double tkv;     //Длительность ФМ кванта                         15
-
+    double Q;       //Скважность                                     16
     //Цель и трасса
     double eprc;    //ЭПР цели                                       17
     double DcBase;      //Дальность цели                                 18
@@ -262,7 +279,7 @@ private:
     
     double delfpri;
     double delfprlcm;
-    double delfprfkm;
+    double delfprfkm;//dekl;
     
     double delFpei;
     double delFpelcm;
@@ -274,12 +291,11 @@ private:
     double delfshi;
     double Psh;
     double Tn;
-    double N; //число импульсов в пачке (стр. 11)
+    // double N;
     double Tc_imp;
     double Tc_lchm;
+    // double tc_fkm;
     double Tc_fkm;
-
-
 
     double B_imp;
     double B_lchm;
@@ -288,15 +304,13 @@ private:
     double K_p_imp;
     double K_p_lchm;
     double K_p_fkm;
+
     double q_min = 31.219; //минимальное отношение сигнал шум для РЛС
-
     double P_psh = 5.651* pow(10, -14); // мощность собственных щшумов разведприёмника
-
-
 
     double eta=3.142*pow (10, 4); // параметр временного накопления
     double x=1-FpRec;
-
+    double N; //число импульсов в пачке (стр. 11)
 };
 
 #endif // CALCULATORWIDGET_H
