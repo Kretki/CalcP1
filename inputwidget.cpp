@@ -354,11 +354,11 @@ InputWidget::InputWidget(std::array<double, 36>* vars, QWidget *parent)
     layout->addWidget(scrollArea, 1);
 
     //ДЛЯ ОТЛАДКИ
-    this->readFromFile(rlsVec, "inputRLS.txt");
-    this->readFromFile(sVec, "inputSig.txt");
-    this->readFromFile(tVec, "inputTarg.txt");
-    this->readFromFile(nVec, "inputNoise.txt");
-    this->readFromFile(recVec, "inputReceiver.txt");
+    // this->readFromFile(rlsVec, "inputRLS.txt");
+    // this->readFromFile(sVec, "inputSig.txt");
+    // this->readFromFile(tVec, "inputTarg.txt");
+    // this->readFromFile(nVec, "inputNoise.txt");
+    // this->readFromFile(recVec, "inputReceiver.txt");
 }
 
 InputWidget::~InputWidget()

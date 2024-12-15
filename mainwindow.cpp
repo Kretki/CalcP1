@@ -28,9 +28,9 @@ MainWindow::MainWindow(QWidget *parent)
     calc = new CalculatorWidget(vars, this);
     calc->hide();
     connect(btnSubmit, &QPushButton::clicked, this, &MainWindow::startCalc);
-
+    this->setWindowTitle("Исследование методов оценки помехозащищенности и скрытности РЛС");
     //ДЛЯ ОТЛАДКИ
-    this->startCalc();
+    // this->startCalc();
 }
 
 MainWindow::~MainWindow()

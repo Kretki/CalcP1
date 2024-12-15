@@ -261,53 +261,48 @@ double CalculatorWidget:: ar (double x){
 //вероятность правильного обнаружения энергетич приемником излучения РЛС
 //double erf_x = erf(x);
 
-double integrand(double x) {
-    return std::exp(-1/2*std::pow(x/(1-x), 2))/std::pow(1-x, 2);
+// double integrand(double x) {
+//     return std::exp(-1/2*std::pow(x/(1-x), 2))/std::pow(1-x, 2); // Example function
+// }
+
+// double gauss_legendre_integrate(double (*func)(double), double a, double b, int n) {
+//     // Pre-defined Gauss-Legendre points and weights for n = 5
+//     std::vector<double> points = { -0.906179845938664, -0.538469310105683, 0.0,
+//                                      0.538469310105683,  0.906179845938664 };
+//     std::vector<double> weights = { 0.236926885056189, 0.478628670499366, 0.568888888888889,
+//                                      0.478628670499366, 0.236926885056189 };
+
+//     double midpoint = (a + b) / 2.0;
+//     double half_length = (b - a) / 2.0;
+//     double result = 0.0;
+
+//     for (size_t i = 0; i < points.size(); ++i) {
+//         double x = midpoint + half_length * points[i];
+//         result += weights[i] * func(x);
+//     }
+
+//     return result * half_length;
+// }
+
+// double my_erf(double x){
+//     double res1 = gauss_legendre_integrate(integrand, 0.0, 1.0, 5)/(2*std::pow(2*M_PI, 0.5));
+//     double res2 = erf(x);
+//     return res1+res2;
+// }
+
+double CalculatorWidget:: D_p_imp(double Pi, double Rp ){
+double e = erf( (ar(x) - q_csh_imp(Pi, Rp) * pow(eta/2, 0.5)) /(1+q_csh_imp(Pi, Rp)) );
+return 1.0 - 1/(pow(2*M_PI, 0.5)) * ( e + 1);
 }
 
-double gauss_legendre_integrate(double (*func)(double), double a, double b, int n) {
-    // Pre-defined Gauss-Legendre points and weights for n = 5
-    std::vector<double> points = {  0.0, std::pow(1/3, 0.5), 0.0,
-                                    std::pow(3/7-2/7*std::pow(6/5, 0.5), 0.5),
-                                    0.0};
-    std::vector<double> weights = { 2, 1, 8/9,
-                                    (18+std::pow(30, 0.5))/36,
-                                    128/225};
-
-    double midpoint = (a + b) / 2.0;
-    double half_length = (b - a) / 2.0;
-    double result = 0.0;
-
-    for (size_t i = 0; i < points.size(); ++i) {
-        double x = midpoint + half_length * points[i];
-        result += weights[i] * func(x);
-    }
-
-    return result * half_length;
+double CalculatorWidget:: D_p_fkm(double Pi, double Rp ){
+return 1.0- 1/(pow(2*M_PI, 0.5)) * (erf( ( ar(x) - q_csh_fkm(Pi, Rp) * pow(eta/2, 0.5)) /(1+q_csh_fkm(Pi, Rp)) ) + 1) ;
 }
 
-double my_erf(double x){
-    double res1 = gauss_legendre_integrate(integrand, 0.0, 1.0, 5)/(2*std::pow(2*M_PI, 0.5));
-    double res2 = erf(x);
-    qDebug() << res2 << ' ' << res1;
-    return res1+res2;
-}
+double CalculatorWidget:: D_p_lchm(double Pi, double Rp ){
 
-double CalculatorWidget:: D_p_imp(double Pi,  double Rp ){
-    // return (1 - erf(ar(x) - q_csh_imp(Pi, Rp) * pow(eta/2, 0.5) /(1+q_csh_imp(Pi, Rp)) ));
-    return (1 - 1/(pow(2*M_PI,0.5))*my_erf( (ar(x) - q_csh_imp(Pi, Rp) * pow(eta/2, 0.5)) /(1+q_csh_imp(Pi, Rp)) )) ;
+return 1.0- 1/ (pow(2*M_PI, 0.5)) * (erf( ( ar(x) - q_csh_lchm(Pi, Rp) * pow(eta/2, 0.5)) /(1+q_csh_lchm(Pi, Rp)) ) + 1 );
 }
-
-double CalculatorWidget:: D_p_fkm(double Pi,  double Rp ){
-    // return (1 - erf(ar(x) - q_csh_fkm(Pi, Rp) * pow(eta/2, 0.5) /(1+q_csh_fkm(Pi, Rp)) ));
-    return (1 - 1/pow(2*M_PI,0.5)* my_erf( ( ar(x) - q_csh_fkm(Pi, Rp) * pow(eta/2, 0.5)) /(1+q_csh_fkm(Pi, Rp)) ) );
-}
-
-double CalculatorWidget:: D_p_lchm(double Pi,  double Rp ){
-    // return (1 - erf(ar(x) - q_csh_lchm(Pi, Rp) * pow(eta/2, 0.5) /(1+q_csh_lchm(Pi, Rp)) ));
-    return (1 - 1/(pow(2*M_PI,0.5))* my_erf( ( ar(x) - q_csh_lchm(Pi, Rp) * pow(eta/2, 0.5)) /(1+q_csh_lchm(Pi, Rp)) ) );
-}
-
 
 //отнош сигнал/шум для достижениие заданной вероятности прав обнаруж Do и ложной тревоги Fp в разведприемнике
 double CalculatorWidget:: q_0_out(){

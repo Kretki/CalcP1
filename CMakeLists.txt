@@ -11,7 +11,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt5 COMPONENTS Widgets Core Svg REQUIRED)
+find_package(Qt5 REQUIRED COMPONENTS Widgets Core Svg)
 
 set(QWT_ROOT /usr/local/qwt-6.3.0)
 set(QWT_INCLUDE_DIR ${QWT_ROOT}/include)
